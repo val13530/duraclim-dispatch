@@ -225,14 +225,13 @@ const FLEET = [
   { id:"514-012-017",    depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, fixedTech:"Mohamed" },
   { id:"514-010-015",    depot:"5555 Rue d'Iberville, Montréal",     secteur:"Rosemont/NE", type:"casa_condo", duo:false, cap:1, fixedTech:"Lerby"   },
   { id:"514-014-25",     depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, fixedTech:"Alex"    },
+  { id:"418-015-25",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
   { id:"514-016-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
-  { id:"514-017-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
   { id:"514-019-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, fixedTech:null      },
   { id:"514-020-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, fixedTech:null      },
-  { id:"514-021-25",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
-  { id:"Grand Caravan 1",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
-  { id:"Grand Caravan 2",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
-  { id:"Grand Caravan 3",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
+  { id:"Grand Caravan 1",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
+  { id:"Grand Caravan 2",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
+  { id:"Grand Caravan 3",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
   { id:"Hyundai (1)",    depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
   { id:"Mazda (1)",      depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
 ];
@@ -240,15 +239,15 @@ const FLEET = [
 // ─── TECHS ────────────────────────────────────────────────────────────────────
 const TECHS = [
   { name:"Mohamed",    full:"Mohamed Fofana",          zone:"Laval",           pref:["514-012-017"],                                       type:"casa_condo", duo:false, fixedCamion:"514-012-017" },
-  { name:"Ali",        full:"Ali Messaoudi",            zone:"Côte-des-Neiges", pref:["514-016-26","514-021-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Christopher",full:"Christopher Sulyvan",      zone:"Plateau/Centre",  pref:["514-016-26","514-017-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Israel",     full:"Israel Mpoyi",             zone:"Hochelaga/Centre",pref:["514-017-26","514-021-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Rachid",     full:"Rachid Ait Idir",          zone:"Montréal/Centre", pref:["514-016-26","514-017-26","514-021-25"],                type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Pape",       full:"Pape Alioune Sy",          zone:"Côte-des-Neiges", pref:["514-021-25","514-016-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Ali",        full:"Ali Messaoudi",            zone:"Côte-des-Neiges", pref:["514-016-26","418-015-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Christopher",full:"Christopher Sulyvan",      zone:"Plateau/Centre",  pref:["514-016-26","418-015-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Israel",     full:"Israel Mpoyi",             zone:"Hochelaga/Centre",pref:["514-016-26","418-015-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Rachid",     full:"Rachid Ait Idir",          zone:"Montréal/Centre", pref:["514-016-26","418-015-25"],                type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Pape",       full:"Pape Alioune Sy",          zone:"Côte-des-Neiges", pref:["514-016-26","418-015-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Kinsley",    full:"Kinsley Boileau",          zone:"RDP/NE",          pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Jennings",   full:"Jennings Mathurin",        zone:"Terrebonne",      pref:["514-016-26","514-017-26","514-021-25"],               type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Jennings",   full:"Jennings Mathurin",        zone:"Terrebonne",      pref:["514-016-26","418-015-25"],               type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Alex",       full:"Alexandre Germain",        zone:"Laval",           pref:["514-014-25"],                                         type:"casa_condo", duo:false, fixedCamion:"514-014-25" },
-  { name:"Daniel",     full:"Daniel Mpeng",             zone:"Laval",           pref:["514-012-017","514-014-25","514-016-26"],               type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Daniel",     full:"Daniel Mpeng",             zone:"Laval",           pref:["514-016-26","418-015-25"],               type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Thierno",    full:"Thierno I.S. Bah",         zone:"Côte-des-Neiges", pref:["514-019-26","514-020-26"],                            type:"duo",        duo:true,  fixedCamion:null },
   { name:"Carson",     full:"Carson Alphonse",          zone:"RDP/NE",          pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Yanis",      full:"Yanis Ferdji",             zone:"Anjou/Est",       pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
@@ -454,8 +453,9 @@ function parseCSV() {
 }
 
 // ─── SCORING ──────────────────────────────────────────────────────────────────
-function scoreCamion(tech, camion) {
-  if (camion.fixedTech && camion.fixedTech !== tech.name) return -999;
+function scoreCamion(tech, camion, reservedCamions) {
+  // Fixed camion reserved only if its tech is active today
+  if (camion.fixedTech && camion.fixedTech !== tech.name && reservedCamions.has(camion.id)) return -999;
   if (tech.type === "murale" && camion.type !== "murale") return -999;
   if (tech.type !== "murale" && camion.type === "murale") return -999;
   if (tech.duo && !camion.duo) return -999;
@@ -474,7 +474,17 @@ function computeDay(isoDate) {
   const usage        = {};
   const assignments  = {};
 
-  // Fixed camions first
+  // Determine which fixed camions are actually reserved today
+  // (only when their tech is present AND active — not oncall)
+  const reservedCamions = new Set();
+  for (const tech of activeTechs) {
+    const data = dayJobs[tech.name];
+    if (tech.fixedCamion && data.status !== "oncall" && !dayOverrides[tech.name]) {
+      reservedCamions.add(tech.fixedCamion);
+    }
+  }
+
+  // First pass: fixed camions + overrides + oncall
   for (const tech of activeTechs) {
     const data = dayJobs[tech.name];
     if (data.status === "oncall") { assignments[tech.name] = { camion:null, status:"oncall", oncall:true }; continue; }
@@ -490,11 +500,11 @@ function computeDay(isoDate) {
       assignments[tech.name] = { camion:tech.fixedCamion, status:"active", fixed:true, depot:c?.depot }; continue;
     }
   }
-  // Score-based
+  // Score-based: fixed camions available if their tech is absent/oncall today
   for (const tech of activeTechs) {
     if (assignments[tech.name]) continue;
-    const eligible = FLEET.filter(c => !c.fixedTech && (usage[c.id]||0) < c.cap);
-    const ranked = eligible.map(c => ({ c, s:scoreCamion(tech,c) })).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+    const eligible = FLEET.filter(c => (usage[c.id]||0) < c.cap);
+    const ranked = eligible.map(c => ({ c, s:scoreCamion(tech,c,reservedCamions) })).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
     if (ranked.length === 0) { assignments[tech.name] = { camion:null, status:"active", conflict:true }; }
     else {
       const best = ranked[0].c;
