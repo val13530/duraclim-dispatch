@@ -333,13 +333,21 @@ function formatTime(timesStr) {
 
 // ─── TECH MATCHER ─────────────────────────────────────────────────────────────
 function matchTech(rawAssigned) {
-  let cleanName = rawAssigned.trim();
-  const m = rawAssigned.match(/[-–]\s*(?:Mural|Casa|Condo|Murale|Ticket|Supervision)(?:\s+\w+)?\s*[-–]\s*(.+)/i);
-  if (m) cleanName = m[1].trim();
-  return TECHS.find(t => {
-    const fl = t.full.toLowerCase(), cl = cleanName.toLowerCase();
-    return fl === cl || fl.startsWith(cl.split(" ")[0]) || cl.startsWith(fl.split(" ")[0]) || fl.includes(cl.split(" ")[0]) || cl.includes(t.name.toLowerCase());
-  });
+  const raw = rawAssigned.trim();
+  const lastDash = raw.lastIndexOf(" - ");
+  const cleanName = lastDash !== -1 ? raw.substring(lastDash + 3).trim() : raw;
+  const m = raw.match(/[-u2013]s*(?:Mural|Casa|Condo|Murale|Ticket|Supervision)(?:s+w+)?s*[-u2013]s*(.+)/i);
+  const altName = m ? m[1].trim() : null;
+  const candidates = [...new Set([cleanName, altName].filter(Boolean))];
+  for (const name of candidates) {
+    const cl = name.toLowerCase().trim();
+    const found = TECHS.find(t => {
+      const fl = t.full.toLowerCase(), nm = t.name.toLowerCase();
+      return fl===cl || cl===nm || fl.startsWith(cl.split(" ")[0]) || cl.startsWith(fl.split(" ")[0]) || fl.includes(cl.split(" ")[0]) || cl.includes(nm) || nm.includes(cl.split(" ")[0]);
+    });
+    if (found) return found;
+  }
+  return null;
 }
 
 // ─── CSV PARSER ───────────────────────────────────────────────────────────────
@@ -356,7 +364,7 @@ function splitCSVLine(line) {
 function parseCSV() {
   const raw = document.getElementById("csv-input").value.trim();
   if (!raw) return;
-  const lines = raw.split("\n").map(l => l.trim()).filter(l => l);
+  const lines = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").map(l => l.trim()).filter(l => l);
   if (lines.length < 2) { setImportStatus("Fichier vide."); return; }
 
   const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase().replace(/"/g, "").trim());
