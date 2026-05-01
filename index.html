@@ -167,12 +167,13 @@
   <!-- TAB IMPORT -->
   <div id="tab-import" class="tab-content">
     <div class="card">
-      <div class="section-title">Export Jobber — Format CSV</div>
+      <div class="section-title">Export Jobber — Format natif</div>
       <div class="info-box">
-        Colonnes requises (dans n'importe quel ordre) : <strong>Technicien</strong>, <strong>Date</strong>, <strong>Statut</strong>, <strong>Première adresse</strong>.<br>
-        Copier-coller directement depuis Jobber ou un export Google Sheets.
+        Coller l'export CSV Jobber directement (<strong>One-off jobs Report</strong>).<br>
+        L'outil lit automatiquement : <strong>Visits assigned to</strong> (technicien), <strong>Service street + Service city</strong> (adresses), <strong>Scheduled start date</strong> (date).<br>
+        Toutes les jobs du même technicien sont regroupées — la première adresse est extraite automatiquement.
       </div>
-      <textarea id="csv-input" rows="10" placeholder="Technicien,Date,Statut,Première adresse&#10;Mohamed Fofana,2026-05-06,A voir,&quot;350 Rue des Perron, Laval&quot;&#10;Ali Messaoudi,2026-05-06,A voir,&quot;5400 Av. Victoria, Montréal&quot;"></textarea>
+      <textarea id="csv-input" rows="10" placeholder="Coller ici l'export CSV Jobber (One-off jobs Report)..."></textarea>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
         <button class="primary" onclick="parseCSV()">Importer</button>
         <button onclick="loadDemo()">Charger données démo</button>
@@ -378,7 +379,11 @@ function renderResults(dateVal, activeTechs) {
         }
       </div>
 
-      ${job ? `<div class="job-line"><span class="job-label">1ère job :</span><span class="job-addr">${job.address}</span></div>` : ''}
+      ${job ? `<div class="job-line">
+        <span class="job-label">1ère job :</span>
+        <span class="job-addr">${job.address}</span>
+        ${job.allAddresses && job.allAddresses.length > 1 ? `<span class="badge" style="background:var(--gray-bg);color:var(--gray-text);">${job.allAddresses.length} jobs</span>` : ''}
+      </div>` : ''}
 
       <div class="override-row">
         <span class="override-label">Override :</span>
@@ -431,40 +436,101 @@ function parseCSV() {
   const raw = document.getElementById("csv-input").value.trim();
   if (!raw) return;
   const lines = raw.split("\n").map(l => l.trim()).filter(l => l);
-  const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/"/g, ""));
-  const fi = (keywords) => headers.findIndex(h => keywords.some(k => h.includes(k)));
-  const techIdx  = fi(["technicien","tech","nom"]);
-  const addrIdx  = fi(["adresse","address","première","premiere","first"]);
-  const dateIdx  = fi(["date"]);
-  const statIdx  = fi(["statut","status"]);
+  if (lines.length < 2) { document.getElementById("import-status").textContent = "Fichier vide ou invalide."; return; }
 
-  if (techIdx === -1 || addrIdx === -1) {
-    document.getElementById("import-status").textContent = "Colonnes non trouvées. Vérifier : Technicien, Première adresse.";
+  const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase().replace(/"/g, "").trim());
+  const fi = (keywords) => headers.findIndex(h => keywords.some(k => h.includes(k)));
+
+  // Colonnes format Jobber natif
+  const visitIdx   = fi(["visits assigned to", "assigned to"]);
+  const streetIdx  = fi(["service street"]);
+  const cityIdx    = fi(["service city"]);
+  const dateIdx    = fi(["scheduled start date", "scheduled start"]);
+  // Fallback format simple
+  const techIdx    = fi(["technicien","tech"]);
+  const addrIdx    = fi(["première adresse","premiere adresse","first address","adresse"]);
+
+  const isJobberNative = visitIdx !== -1 && streetIdx !== -1;
+  const isSimple = techIdx !== -1 && addrIdx !== -1;
+
+  if (!isJobberNative && !isSimple) {
+    document.getElementById("import-status").textContent = "Format non reconnu. Colonnes attendues : 'Visits assigned to' + 'Service street' (Jobber natif).";
     return;
   }
 
-  importedJobs = {};
+  // Regrouper par tech — plusieurs jobs par tech possibles
+  const techJobs = {};
+
   for (let i = 1; i < lines.length; i++) {
     const cols = splitCSVLine(lines[i]);
-    if (!cols[techIdx]) continue;
-    const rawName = cols[techIdx].trim();
-    const firstName = rawName.split(" ")[0];
-    const matchedTech = TECHS.find(t =>
-      t.full.toLowerCase().startsWith(firstName.toLowerCase()) ||
-      t.name.toLowerCase() === firstName.toLowerCase()
-    );
-    const key = matchedTech ? matchedTech.name : firstName;
+    if (!cols.length) continue;
+
+    let rawTech = "", address = "", date = "";
+
+    if (isJobberNative) {
+      rawTech = (cols[visitIdx] || "").replace(/"/g, "").trim();
+      const street = (cols[streetIdx] || "").replace(/"/g, "").trim();
+      const city   = (cols[cityIdx]   || "").replace(/"/g, "").trim();
+      address = [street, city].filter(Boolean).join(", ");
+      date    = (cols[dateIdx]  || "").replace(/"/g, "").trim();
+    } else {
+      rawTech = (cols[techIdx]  || "").replace(/"/g, "").trim();
+      address = (cols[addrIdx]  || "").replace(/"/g, "").trim();
+      date    = dateIdx >= 0 ? (cols[dateIdx] || "").replace(/"/g, "").trim() : "";
+    }
+
+    if (!rawTech || rawTech.toLowerCase().includes("dummy") || rawTech.toLowerCase() === "off") continue;
+
+    // Extraire le nom du tech depuis format Jobber "A - Mural - Edgard Marvens Jeanith" ou "B - Casa - Kinsley Boileau"
+    let cleanName = rawTech;
+    const dashMatch = rawTech.match(/[-–]\s*(?:Mural|Casa|Condo)\s*[-–]\s*(.+)/i);
+    if (dashMatch) cleanName = dashMatch[1].trim();
+
+    // Matcher avec la liste TECHS
+    const matchedTech = TECHS.find(t => {
+      const fullLower = t.full.toLowerCase();
+      const cleanLower = cleanName.toLowerCase();
+      return fullLower === cleanLower ||
+        fullLower.startsWith(cleanLower.split(" ")[0].toLowerCase()) ||
+        cleanLower.includes(t.name.toLowerCase()) ||
+        t.full.toLowerCase().includes(cleanLower.split(" ")[0].toLowerCase());
+    });
+
+    const key = matchedTech ? matchedTech.name : cleanName.split(" ")[0];
+
+    if (!techJobs[key]) techJobs[key] = { addresses: [], date, rawName: cleanName };
+    if (address) techJobs[key].addresses.push(address);
+
+    // Mettre à jour la date si disponible
+    if (date && !techJobs[key].date) techJobs[key].date = date;
+  }
+
+  // Construire importedJobs avec la première adresse de chaque tech
+  importedJobs = {};
+  for (const [key, data] of Object.entries(techJobs)) {
     importedJobs[key] = {
-      address: addrIdx >= 0 ? cols[addrIdx] || "" : "",
-      date: dateIdx >= 0 ? cols[dateIdx] || "" : "",
-      status: statIdx >= 0 ? cols[statIdx] || "" : "",
+      address: data.addresses[0] || "",
+      allAddresses: data.addresses,
+      date: data.date,
+      rawName: data.rawName,
     };
-    if (dateIdx >= 0 && cols[dateIdx] && !document.getElementById("plan-date").value) {
-      document.getElementById("plan-date").value = cols[dateIdx];
+  }
+
+  // Auto-remplir la date si toutes les jobs sont le même jour
+  const dates = [...new Set(Object.values(importedJobs).map(j => j.date).filter(Boolean))];
+  if (dates.length === 1 && dates[0]) {
+    // Convertir "May 02, 2026" → "2026-05-02"
+    const parsed = new Date(dates[0]);
+    if (!isNaN(parsed)) {
+      const iso = parsed.toISOString().split("T")[0];
+      document.getElementById("plan-date").value = iso;
     }
   }
+
   const n = Object.keys(importedJobs).length;
-  document.getElementById("import-status").textContent = `${n} technicien${n>1?'s':''} importé${n>1?'s':''}.`;
+  const totalJobs = Object.values(importedJobs).reduce((s, j) => s + (j.allAddresses?.length || 1), 0);
+  document.getElementById("import-status").textContent =
+    `${n} technicien${n>1?'s':''} · ${totalJobs} job${totalJobs>1?'s':''} · 1ères adresses extraites automatiquement.`;
   switchTab("planning");
 }
 
@@ -490,16 +556,13 @@ function clearImport() {
 
 function loadDemo() {
   document.getElementById("csv-input").value =
-`Technicien,Date,Statut,Première adresse
-Mohamed Fofana,2026-05-06,A voir,"350 Rue des Perron, Laval"
-Ali Messaoudi,2026-05-06,A voir,"5400 Av. Victoria, Montréal"
-Christopher Sulyvan,2026-05-06,A voir,"3600 Rue Rachel E, Montréal"
-Israel Mpoyi,2026-05-06,A voir,"4200 Rue Ontario E, Montréal"
-Alexandre Germain,2026-05-06,A voir,"900 Boul. Cartier O, Laval"
-Daniel Mpeng,2026-05-06,A voir,"1800 Bd des Laurentides, Laval"
-Thierno Bah,2026-05-06,Duo,"4800 Av. Victoria, Montréal"
-Yanis Ferdji,2026-05-06,A voir,"7000 Bd des Galeries d'Anjou, Montréal"
-Carson Alphonse,2026-05-06,A voir,"12000 Rue Grenet, Montréal"`;
+`Job #,Client name,Lead source,Client email,Client phone,Billing street,Billing city,Billing province,Billing ZIP,Service property name,Service street,Service city,Service province,Service ZIP,Title,Created date,Scheduled start date,Closed date,Salesperson,Line items,Visits assigned to,Invoice #s
+276047570,Maria Weinrauch,DuraClim Automations,mariabweinrauch@gmail.com,(514) 442-2287,64 Rue Lucien-Thériault,Notre-Dame-de-l'Île-Perrot,Québec,J7W 1T6,,64 Rue Lucien-Thériault,Notre-Dame-de-l'Île-Perrot,Québec,J7W 1T6,Mural + dryer,"Apr 30, 2026","May 06, 2026",-,,Nettoyage murale,B - Casa - Pape Alioune Sy,""
+276047561,Adriana Thomas,DuraClim Automations,atgomez14@gmail.com,(438) 828-4196,8441 Av. Casgrain,Montréal,Québec,H2P 2K7,,8441 Av. Casgrain,Montréal,Québec,H2P 2K7,Murale,"Apr 30, 2026","May 06, 2026",-,,Nettoyage murale,B - Casa - Kinsley Boileau,""
+276047489,Erin Flanagan,DuraClim Automations,flanagan@gmail.com,(438) 821-9955,5390 Boulevard Saint-Laurent,Montréal,Québec,H2T 1S1,,5390 Boulevard Saint-Laurent,Montréal,Québec,H2T 1S1,Echangeur + Murales,"Apr 29, 2026","May 06, 2026",-,,Nettoyage,B - Casa - Kinsley Boileau,""
+276046994,Palina Zh.,DuraClim Automations,palinazh@hotmail.com,(514) 453-1000,1327 Rue Des Cyprès,Pincourt,Québec,J7W 0A8,,1327 Rue Des Cyprès,Pincourt,Québec,J7W 0A8,Nettoyage Murale,"Apr 24, 2026","May 06, 2026",-,,Nettoyage,B - Casa - Pape Alioune Sy,""
+276042149,Antoine Ahizi,DuraClim Automations,Houamian@hotmail.com,(514) 295-4145,8205 Rue Angèle,Laval,Québec,H7A 3B4,,8205 Rue Angèle,Laval,Québec,H7A 3B4,murale+secheuse,"Dec 26, 2025","May 06, 2026",-,,Nettoyage,B - Casa - Alexandre Germain,""
+276044976,Michel Lesage,DuraClim Automations,michel@gmail.com,(514) 240-5917,1 Rue Édouard-Lalonde,Vaudreuil-Dorion,Québec,J7V 0H7,,1 Rue Édouard-Lalonde,Vaudreuil-Dorion,Québec,J7V 0H7,2 murales,"Mar 20, 2026","May 06, 2026",-,,Nettoyage,A - Mural - Edgard Marvens Jeanith,""`;
   parseCSV();
 }
 
