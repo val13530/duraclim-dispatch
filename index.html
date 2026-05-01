@@ -338,18 +338,22 @@ function matchTech(rawAssigned) {
   const raw = rawAssigned.trim();
   const lastDash = raw.lastIndexOf(" - ");
   const cleanName = lastDash !== -1 ? raw.substring(lastDash + 3).trim() : raw;
-  const m = raw.match(/[-u2013]s*(?:Mural|Casa|Condo|Murale|Ticket|Supervision)(?:s+w+)?s*[-u2013]s*(.+)/i);
-  const altName = m ? m[1].trim() : null;
-  const candidates = [...new Set([cleanName, altName].filter(Boolean))];
-  for (const name of candidates) {
-    const cl = name.toLowerCase().trim();
-    const found = TECHS.find(t => {
-      const fl = t.full.toLowerCase(), nm = t.name.toLowerCase();
-      return fl===cl || cl===nm || fl.startsWith(cl.split(" ")[0]) || cl.startsWith(fl.split(" ")[0]) || fl.includes(cl.split(" ")[0]) || cl.includes(nm) || nm.includes(cl.split(" ")[0]);
-    });
-    if (found) return found;
-  }
-  return null;
+  const cl = cleanName.toLowerCase().trim();
+  const words = cl.split(" ").filter(w => w.length > 2);
+  return TECHS.find(t => {
+    const fl = t.full.toLowerCase();
+    const nm = t.name.toLowerCase();
+    if (fl === cl) return true;
+    if (cl === nm) return true;
+    if (fl === cl) return true;
+    const flWords = fl.split(" ");
+    const clWords = cl.split(" ");
+    const firstWordMatch = flWords[0] === clWords[0] && flWords[0].length > 2;
+    if (firstWordMatch) return true;
+    const fullMatch = clWords.every(w => fl.includes(w)) && clWords.length >= 2;
+    if (fullMatch) return true;
+    return false;
+  });
 }
 
 // ─── CSV PARSER ───────────────────────────────────────────────────────────────
