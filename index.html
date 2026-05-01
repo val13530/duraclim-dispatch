@@ -193,8 +193,10 @@
         <button class="primary" onclick="parseCSV()">Importer</button>
         <button onclick="loadDemo()">Charger démo</button>
         <button class="danger-sm" onclick="clearImport()">Effacer</button>
+        <button onclick="debugCSV()" style="font-size:11px;padding:4px 8px;color:var(--text3);">Debug</button>
         <span class="status-text" id="import-status"></span>
       </div>
+      <div id="debug-output" style="display:none;margin-top:10px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px;font-family:monospace;font-size:11px;max-height:200px;overflow-y:auto;white-space:pre-wrap;"></div>
     </div>
   </div>
 
@@ -961,6 +963,31 @@ function loadDemo() {
 }
 
 document.getElementById("app-date").textContent = new Date().toLocaleDateString("fr-CA",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+
+function debugCSV() {
+  const raw = document.getElementById("csv-input").value.trim();
+  if (!raw) { document.getElementById("debug-output").style.display="none"; return; }
+  const lines = raw.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").map(l=>l.trim()).filter(l=>l);
+  const headers = splitCSVLine(lines[0]);
+  const ai = headers.findIndex(h=>h.toLowerCase().includes("assigned to"));
+  const ci = headers.findIndex(h=>h.toLowerCase().includes("client name"));
+  let out = `Headers: ${headers.length} cols\nAssigned to index: ${ai}\nClient name index: ${ci}\n\n`;
+  let papeFound = 0;
+  for (let i=1;i<Math.min(lines.length,60);i++) {
+    const cols = splitCSVLine(lines[i]);
+    const assigned = ai>=0&&cols[ai] ? cols[ai].replace(/"/g,"").trim() : "";
+    if (assigned.includes("Pape")) {
+      papeFound++;
+      const client = ci>=0&&cols[ci] ? cols[ci].replace(/"/g,"").trim() : "";
+      const matched = matchTech(assigned);
+      out += `Line ${i}: cols=${cols.length} | assigned="${assigned}" | client="${client}" | matched=${matched?matched.full:"NONE"}\n`;
+    }
+  }
+  if (papeFound===0) out += "Pape NOT FOUND in first 60 lines\n";
+  const dbg = document.getElementById("debug-output");
+  dbg.textContent = out;
+  dbg.style.display = "block";
+}
 renderFleet(); renderRules();
 </script>
 </body>
