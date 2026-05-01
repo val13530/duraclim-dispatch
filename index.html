@@ -541,9 +541,10 @@ function generateRecommendations() {
       const depotZoneVal = depotZone(camion.secteur);
       const techZone     = tech.zone;
 
-      // ── TYPE 1 — Garder camion à domicile ────────────────────────────────
-      // If tech works tomorrow AND first job tomorrow is closer to tech's home than depot
-      if (isoNext) {
+      // ── TYPE 1 — Garder camion à domicile (hors Montréal uniquement) ──────
+      const MONTREAL_ZONES = ["Plateau/Centre","Hochelaga/Centre","Côte-des-Neiges","Montréal/Centre","RDP/NE","Anjou/Est","Rosemont/NE"];
+      const techIsMontreal = MONTREAL_ZONES.includes(techZone);
+      if (isoNext && !techIsMontreal) {
         const nextDayJobs = importedData[isoNext] || {};
         const nextJob = nextDayJobs[tech.name];
         if (nextJob && nextJob.status !== "oncall") {
@@ -617,6 +618,9 @@ function generateRecommendations() {
           if (jobB.status === "oncall" || !jobB.firstCity) continue;
           const techB = TECHS.find(t => t.name === techBName);
           if (!techB || techBName === techA.name) continue;
+          // Tech A must also be active (not oncall) on J+1 to be a valid candidate
+          const techANextDay = nextDayJobs[techA.name];
+          if (!techANextDay || techANextDay.status === "oncall") continue;
 
           const jobBFirstZone = cityToZone(jobB.firstCity);
 
@@ -641,7 +645,14 @@ function generateRecommendations() {
                 camionId: asgnA.camion,
                 jobBCity: jobB.firstCity,
                 title: `Type 2 — Échange de job recommandé`,
-                body: `La première job de <strong>${techB.full}</strong> le ${fmtDate(isoNext)} est à <strong>${jobB.firstCity}</strong> — zone ${jobBFirstZone}.<br><br><strong>${techA.full}</strong> habite en ${techA.zone}, plus proche de cette job que ${techB.full} (${techB.zone}). De plus, ${techA.full} finit sa journée du ${fmtDate(iso)} près de son domicile.<br><br>Recommandation : transférer cette job du ${fmtDate(isoNext)} de <strong>${techB.full}</strong> à <strong>${techA.full}</strong>, et demander à <strong>${techA.full}</strong> de garder le camion <strong>${asgnA.camion}</strong> chez lui ce soir.`,
+                body: (() => {
+                  const montrealZones = ["Plateau/Centre","Hochelaga/Centre","Côte-des-Neiges","Montréal/Centre","RDP/NE","Anjou/Est","Rosemont/NE"];
+                  const aIsMtl = montrealZones.includes(techA.zone);
+                  const camionNote = aIsMtl
+                    ? `${techA.full} récupère le camion <strong>${asgnA.camion}</strong> au dépôt le lendemain matin avant de se rendre à la job.`
+                    : `Demander à ${techA.full} de garder le camion <strong>${asgnA.camion}</strong> chez lui ce soir pour partir directement le lendemain.`;
+                  return `La première job de <strong>${techB.full}</strong> le ${fmtDate(isoNext)} est à <strong>${jobB.firstCity}</strong> — zone ${jobBFirstZone}.<br><br><strong>${techA.full}</strong> habite en ${techA.zone}, plus proche de cette job que ${techB.full} (${techB.zone}).<br><br>Recommandation : transférer cette job du ${fmtDate(isoNext)} de <strong>${techB.full}</strong> à <strong>${techA.full}</strong>. ${camionNote}`;
+                })(),
               });
             }
           }
