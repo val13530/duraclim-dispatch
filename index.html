@@ -246,7 +246,7 @@ const TECHS = [
   { name:"Rachid",     full:"Rachid Ait Idir",          zone:"Montréal/Centre", pref:["514-016-26","514-017-26","514-021-25"],                type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Pape",       full:"Pape Alioune Sy",          zone:"Côte-des-Neiges", pref:["514-021-25","514-016-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Kinsley",    full:"Kinsley Boileau",          zone:"RDP/NE",          pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Jennings",   full:"Jennings Mathurin",        zone:"Rive-Nord",       pref:["514-016-26","514-017-26","514-021-25"],               type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Jennings",   full:"Jennings Mathurin",        zone:"Terrebonne",      pref:["514-016-26","514-017-26","514-021-25"],               type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Alex",       full:"Alexandre Germain",        zone:"Laval",           pref:["514-014-25"],                                         type:"casa_condo", duo:false, fixedCamion:"514-014-25" },
   { name:"Daniel",     full:"Daniel Mpeng",             zone:"Laval",           pref:["514-012-017","514-014-25","514-016-26"],               type:"casa_condo", duo:false, fixedCamion:null },
   { name:"Thierno",    full:"Thierno I.S. Bah",         zone:"Côte-des-Neiges", pref:["514-019-26","514-020-26"],                            type:"duo",        duo:true,  fixedCamion:null },
@@ -260,8 +260,8 @@ const TECHS = [
 // ─── ZONE PROXIMITY ───────────────────────────────────────────────────────────
 // Zone groups: closer zones score higher proximity
 const ZONE_GROUPS = {
-  "Laval":           ["Laval","Rive-Nord","Repentigny"],
-  "Rive-Nord":       ["Laval","Rive-Nord","Repentigny","Anjou/Est"],
+  "Laval":           ["Laval","Rive-Nord","Repentigny","Terrebonne"],
+  "Rive-Nord":       ["Laval","Rive-Nord","Repentigny","Terrebonne","Anjou/Est"],
   "RDP/NE":          ["RDP/NE","Anjou/Est","Hochelaga/Centre"],
   "Anjou/Est":       ["Anjou/Est","RDP/NE","Hochelaga/Centre"],
   "Plateau/Centre":  ["Plateau/Centre","Hochelaga/Centre","Montréal/Centre","Côte-des-Neiges"],
@@ -280,8 +280,8 @@ const DEPOT_ZONES = {
 function cityToZone(city) {
   if (!city) return "Montréal/Centre";
   const c = city.toLowerCase();
-  if (c.includes("laval") || c.includes("mascouche") || c.includes("terrebonne") || c.includes("blainville") || c.includes("boisbriand") || c.includes("saint-eustache") || c.includes("mirabel")) return "Laval";
-  if (c.includes("repentigny") || c.includes("l'assomption") || c.includes("lassomption") || c.includes("saint-sulpice")) return "Rive-Nord";
+  if (c.includes("laval") || c.includes("mascouche") || c.includes("blainville") || c.includes("boisbriand") || c.includes("saint-eustache") || c.includes("mirabel")) return "Laval";
+  if (c.includes("terrebonne") || c.includes("repentigny") || c.includes("l'assomption") || c.includes("lassomption") || c.includes("saint-sulpice")) return "Rive-Nord";
   if (c.includes("rivière-des-prairies") || c.includes("montréal-est") || c.includes("montreal-est") || c.includes("anjou")) return "RDP/NE";
   if (c.includes("hochelaga") || c.includes("rosemont") || c.includes("plateau") || c.includes("maisonneuve")) return "Hochelaga/Centre";
   if (c.includes("côte-des-neiges") || c.includes("cote-des-neiges") || c.includes("westmount") || c.includes("côte-saint-luc") || c.includes("ndg") || c.includes("notre-dame-de-grâce")) return "Côte-des-Neiges";
