@@ -7,38 +7,23 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #ffffff;
-    --bg2: #f7f7f5;
-    --bg3: #f0efe9;
-    --text: #1a1a18;
-    --text2: #5f5e5a;
-    --text3: #888780;
-    --border: rgba(0,0,0,0.12);
-    --border2: rgba(0,0,0,0.22);
-    --radius: 8px;
-    --radius-lg: 12px;
-    --blue-bg: #e6f1fb;
-    --blue-text: #185fa5;
-    --green-bg: #eaf3de;
-    --green-text: #3b6d11;
-    --amber-bg: #faeeda;
-    --amber-text: #854f0b;
-    --red-bg: #fcebeb;
-    --red-text: #a32d2d;
-    --purple-bg: #eeedfe;
-    --purple-text: #3c3489;
-    --gray-bg: #f1efe8;
-    --gray-text: #5f5e5a;
-    --laval: #d5e8d4;
-    --iberville: #fff2cc;
-    --stlaurent: #dae8fc;
+    --bg: #ffffff; --bg2: #f7f7f5; --bg3: #f0efe9;
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --radius: 8px; --radius-lg: 12px;
+    --blue-bg: #e6f1fb; --blue-text: #185fa5;
+    --green-bg: #eaf3de; --green-text: #3b6d11;
+    --amber-bg: #faeeda; --amber-text: #854f0b;
+    --red-bg: #fcebeb; --red-text: #a32d2d;
+    --purple-bg: #eeedfe; --purple-text: #3c3489;
+    --gray-bg: #f1efe8; --gray-text: #5f5e5a;
+    --laval: #d5e8d4; --iberville: #fff2cc; --stlaurent: #dae8fc;
   }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; color: var(--text); background: var(--bg3); min-height: 100vh; }
-  .app { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
-  .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .app { max-width: 980px; margin: 0 auto; padding: 24px 16px; }
+  .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
   .app-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
   .app-subtitle { font-size: 12px; color: var(--text2); margin-top: 2px; }
-  .app-date { font-size: 12px; color: var(--text3); text-align: right; }
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 12px; }
   .section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text2); text-transform: uppercase; margin-bottom: 12px; }
   .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -47,7 +32,14 @@
   .tab.active { background: var(--bg); color: var(--text); border-color: var(--border2); font-weight: 500; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
-  .controls { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+  .day-tab-bar { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; border-bottom: 0.5px solid var(--border); padding-bottom: 10px; }
+  .day-tab { font-size: 12px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer; background: var(--bg2); color: var(--text2); transition: all 0.15s; user-select: none; white-space: nowrap; }
+  .day-tab:hover { background: var(--bg); }
+  .day-tab.active { background: #185fa5; color: #fff; border-color: #185fa5; font-weight: 500; }
+  .day-tab.has-conflict { border-color: #e24b4a; color: #a32d2d; }
+  .day-tab.active.has-conflict { background: #a32d2d; border-color: #a32d2d; color: #fff; }
+  .day-panel { display: none; }
+  .day-panel.active { display: block; }
   label.field-label { font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px; font-weight: 500; }
   input[type=date], select, input[type=text] { font-family: inherit; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 10px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
   input[type=date]:focus, select:focus, input[type=text]:focus { border-color: #378add; }
@@ -58,32 +50,30 @@
   button.sm { font-size: 12px; padding: 4px 10px; }
   button.danger-sm { font-size: 12px; padding: 4px 10px; color: var(--red-text); border-color: rgba(162,45,45,0.3); }
   button.danger-sm:hover { background: var(--red-bg); }
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
-  .metric { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; }
-  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
-  .metric-value { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 14px; }
+  .metric { background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; }
+  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+  .metric-value { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
   .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
-  .b-active { background: var(--green-bg); color: var(--green-text); }
-  .b-oncall { background: var(--amber-bg); color: var(--amber-text); }
-  .b-off { background: var(--gray-bg); color: var(--gray-text); }
   .b-duo { background: var(--purple-bg); color: var(--purple-text); }
-  .b-assigned { background: var(--blue-bg); color: var(--blue-text); }
   .b-conflict { background: var(--red-bg); color: var(--red-text); }
   .b-override { background: var(--amber-bg); color: var(--amber-text); }
-  .tech-card { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; background: var(--bg); transition: border-color 0.15s; }
-  .tech-card:hover { border-color: var(--border2); }
+  .b-lastresort { background: #fff2cc; color: #633806; border: 0.5px solid #e6c96a; }
+  .tech-card { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; background: var(--bg); }
   .tech-card.conflict { border-left: 2px solid #e24b4a; }
   .tech-card.validated { border-left: 2px solid #639922; }
+  .tech-card.lastresort { border-left: 2px solid #e6a817; }
   .tech-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
   .tech-info { display: flex; align-items: center; gap: 10px; }
-  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--blue-text); flex-shrink: 0; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--blue-text); flex-shrink: 0; }
   .tech-name { font-weight: 500; font-size: 13px; }
   .tech-zone { font-size: 11px; color: var(--text2); }
   .tech-badges { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
   .assignment-line { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
   .camion-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--blue-bg); color: var(--blue-text); border: 0.5px solid rgba(24,95,165,0.2); }
+  .camion-pill.lastresort { background: #fff2cc; color: #633806; border-color: #e6c96a; }
   .depot-text { font-size: 11px; color: var(--text3); }
-  .job-line { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .job-line { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
   .job-label { font-size: 11px; color: var(--text3); }
   .job-addr { font-size: 12px; color: var(--text2); }
   .override-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); flex-wrap: wrap; }
@@ -91,9 +81,11 @@
   .validate-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
   .validate-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); cursor: pointer; }
   .validate-check input { width: 14px; height: 14px; cursor: pointer; }
-  textarea { font-family: "Menlo", "Consolas", monospace; font-size: 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px; width: 100%; background: var(--bg2); color: var(--text); resize: vertical; outline: none; transition: border-color 0.15s; line-height: 1.6; }
+  textarea { font-family: "Menlo","Consolas",monospace; font-size: 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px; width: 100%; background: var(--bg2); color: var(--text); resize: vertical; outline: none; transition: border-color 0.15s; line-height: 1.6; }
   textarea:focus { border-color: #378add; }
   .info-box { background: var(--blue-bg); border: 0.5px solid rgba(24,95,165,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--blue-text); line-height: 1.6; margin-bottom: 12px; }
+  .warn-box { background: #fff8e6; border: 0.5px solid #e6c96a; border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: #633806; margin-bottom: 10px; }
+  .error-box { background: var(--red-bg); border: 0.5px solid rgba(162,45,45,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--red-text); margin-bottom: 10px; }
   .status-text { font-size: 12px; color: var(--text3); }
   .fleet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
   .fleet-card { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; background: var(--bg); }
@@ -105,21 +97,16 @@
   .tag-iberville { background: var(--iberville); color: #633806; }
   .tag-stlaurent { background: var(--stlaurent); color: #0c447c; }
   .tag-duo { background: var(--purple-bg); color: var(--purple-text); }
+  .tag-lastresort { background: #fff2cc; color: #633806; border: 0.5px solid #e6c96a; }
   .rule-item { padding: 12px 0; border-bottom: 0.5px solid var(--border); }
   .rule-item:last-child { border-bottom: none; }
   .rule-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
   .rule-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
-  .separator { border: none; border-top: 0.5px solid var(--border); margin: 12px 0; }
   .empty-state { text-align: center; padding: 32px; color: var(--text3); font-size: 13px; }
-  .conflict-warning { background: var(--red-bg); border: 0.5px solid rgba(162,45,45,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--red-text); margin-bottom: 12px; }
-  @media (max-width: 600px) {
-    .app { padding: 16px 12px; }
-    .controls { flex-direction: column; align-items: stretch; }
-    .metrics { grid-template-columns: repeat(3, 1fr); }
-  }
-  .footer { text-align: center; font-size: 11px; color: var(--text3); margin-top: 32px; padding-top: 16px; border-top: 0.5px solid var(--border); }
-  .validated-banner { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green-text); font-weight: 500; }
+  .controls { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
   select.override-select { width: 220px; font-size: 12px; }
+  .footer { text-align: center; font-size: 11px; color: var(--text3); margin-top: 32px; padding-top: 16px; border-top: 0.5px solid var(--border); }
+  @media (max-width: 600px) { .app { padding: 16px 12px; } .controls { flex-direction: column; align-items: stretch; } }
 </style>
 </head>
 <body>
@@ -129,7 +116,7 @@
       <div class="app-title">Assignation Camions — Montréal</div>
       <div class="app-subtitle">Moteur de décision · DuraClim 2026</div>
     </div>
-    <div class="app-date" id="app-date"></div>
+    <div style="font-size:12px;color:var(--text3);" id="app-date"></div>
   </div>
 
   <div class="tab-bar">
@@ -139,59 +126,53 @@
     <div class="tab" onclick="switchTab('rules')">Règles</div>
   </div>
 
-  <!-- TAB PLANNING -->
   <div id="tab-planning" class="tab-content active">
-    <div class="card">
+    <div class="card" style="margin-bottom:12px;">
       <div class="controls">
-        <div>
-          <label class="field-label">Date de planification</label>
-          <input type="date" id="plan-date" />
-        </div>
-        <button class="primary" onclick="runAssignment()">Calculer assignations</button>
-        <button onclick="exportCSV()">Exporter CSV</button>
+        <button class="primary" onclick="runAllDays()">Calculer toutes les journées</button>
+        <button onclick="exportAllCSV()">Exporter tout (CSV)</button>
         <span class="status-text" id="status-msg"></span>
       </div>
     </div>
-
-    <div class="metrics">
-      <div class="metric"><div class="metric-label">Techs actifs</div><div class="metric-value" id="m-active">—</div></div>
-      <div class="metric"><div class="metric-label">Assignés</div><div class="metric-value" id="m-assigned">—</div></div>
-      <div class="metric"><div class="metric-label">Conflits</div><div class="metric-value" id="m-conflicts" style="color:#e24b4a;">—</div></div>
-      <div class="metric"><div class="metric-label">Validés</div><div class="metric-value" id="m-validated" style="color:#3b6d11;">—</div></div>
+    <div id="global-metrics" style="display:none;">
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Journées</div><div class="metric-value" id="m-days">—</div></div>
+        <div class="metric"><div class="metric-label">Techs actifs</div><div class="metric-value" id="m-active">—</div></div>
+        <div class="metric"><div class="metric-label">Assignés</div><div class="metric-value" id="m-assigned">—</div></div>
+        <div class="metric"><div class="metric-label">Conflits</div><div class="metric-value" id="m-conflicts" style="color:#e24b4a;">—</div></div>
+        <div class="metric"><div class="metric-label">Dernier recours</div><div class="metric-value" id="m-lastresort" style="color:#854f0b;">—</div></div>
+      </div>
     </div>
-
-    <div id="conflict-banner"></div>
-    <div id="assignment-results"><div class="empty-state">Sélectionner une date et cliquer sur "Calculer assignations".</div></div>
+    <div id="day-tab-bar" class="day-tab-bar" style="display:none;"></div>
+    <div id="day-panels"></div>
+    <div id="planning-empty" class="empty-state">Importer un export Jobber puis cliquer sur "Calculer toutes les journées".</div>
   </div>
 
-  <!-- TAB IMPORT -->
   <div id="tab-import" class="tab-content">
     <div class="card">
       <div class="section-title">Export Jobber — Format natif</div>
       <div class="info-box">
-        Coller l'export CSV Jobber directement (<strong>One-off jobs Report</strong>).<br>
-        L'outil lit automatiquement : <strong>Visits assigned to</strong> (technicien), <strong>Service street + Service city</strong> (adresses), <strong>Scheduled start date</strong> (date).<br>
-        Toutes les jobs du même technicien sont regroupées — la première adresse est extraite automatiquement.
+        Coller l'export CSV Jobber (<strong>One-off jobs Report</strong>) sur une ou plusieurs journées.<br>
+        L'outil regroupe par date et par technicien automatiquement — une vue par journée est générée.<br>
+        Colonnes lues : <strong>Visits assigned to</strong> · <strong>Service street + city</strong> · <strong>Scheduled start date</strong>
       </div>
       <textarea id="csv-input" rows="10" placeholder="Coller ici l'export CSV Jobber (One-off jobs Report)..."></textarea>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
         <button class="primary" onclick="parseCSV()">Importer</button>
-        <button onclick="loadDemo()">Charger données démo</button>
+        <button onclick="loadDemo()">Charger démo</button>
         <button class="danger-sm" onclick="clearImport()">Effacer</button>
         <span class="status-text" id="import-status"></span>
       </div>
     </div>
   </div>
 
-  <!-- TAB FLEET -->
   <div id="tab-fleet" class="tab-content">
     <div class="card">
       <div class="section-title">Flotte Montréal — 13 véhicules</div>
-      <div class="fleet-grid" id="fleet-grid"></div>
+      <div id="fleet-grid" class="fleet-grid"></div>
     </div>
   </div>
 
-  <!-- TAB RULES -->
   <div id="tab-rules" class="tab-content">
     <div class="card">
       <div class="section-title">Règles du moteur d'assignation</div>
@@ -204,37 +185,37 @@
 
 <script>
 const TECHS = [
-  { name:"Mohamed",    full:"Mohamed Fofana",           zone:"Laval",              pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
-  { name:"Ali",        full:"Ali Messaoudi",             zone:"Côte-des-Neiges",    pref:["514-016-26","514-021-25"],               type:"casa_condo", duo:false },
-  { name:"Christopher",full:"Christopher Sulyvan",       zone:"Plateau/Centre",     pref:["514-016-26","514-017-26"],               type:"casa_condo", duo:false },
-  { name:"Israel",     full:"Israel Mpoyi",              zone:"Plateau/Centre",     pref:["514-017-26","514-021-25"],               type:"casa_condo", duo:false },
-  { name:"Rachid",     full:"Rachid",                    zone:"Montréal",           pref:["514-016-26","514-017-26","514-021-25"],   type:"casa_condo", duo:false },
-  { name:"Pape",       full:"Pape Alioune Sy",           zone:"Côte-des-Neiges",    pref:["514-021-25","514-016-26"],               type:"casa_condo", duo:false },
-  { name:"Kinsley",    full:"Kinsley Boileau",           zone:"RDP/NE Montréal",    pref:["514-010-015","514-019-26"],              type:"casa_condo", duo:false },
-  { name:"Jennings",   full:"Jennings Mathurin",         zone:"Rive-Nord",          pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
-  { name:"Alex",       full:"Alexandre Germain",         zone:"Laval",              pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
-  { name:"Daniel",     full:"Daniel Mpeng",              zone:"Laval",              pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
-  { name:"Thierno",    full:"Thierno I.S. Bah",          zone:"Côte-des-Neiges",    pref:["514-019-26","514-020-26"],               type:"duo",        duo:true  },
-  { name:"Carson",     full:"Carson Alphonse",           zone:"RDP/NE Montréal",    pref:["514-010-015","514-019-26","514-020-26"], type:"casa_condo", duo:false },
-  { name:"Yanis",      full:"Yanis Ferdji",              zone:"Anjou/Est",          pref:["514-019-26","514-020-26","514-010-015"], type:"casa_condo", duo:false },
-  { name:"Edgard",     full:"Edgard Marvens",            zone:"Laval",              pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3"], type:"murale", duo:false },
-  { name:"Gabriele",   full:"Gabriele Biunno",           zone:"RDP/NE Montréal",    pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3","Hyundai (1)"], type:"murale", duo:false },
+  { name:"Mohamed",    full:"Mohamed Fofana",        zone:"Laval",           pref:["514-012-017","514-014-25"],                           type:"casa_condo", duo:false },
+  { name:"Ali",        full:"Ali Messaoudi",          zone:"Côte-des-Neiges", pref:["514-016-26","514-021-25"],                            type:"casa_condo", duo:false },
+  { name:"Christopher",full:"Christopher Sulyvan",    zone:"Plateau/Centre",  pref:["514-016-26","514-017-26"],                            type:"casa_condo", duo:false },
+  { name:"Israel",     full:"Israel Mpoyi",           zone:"Plateau/Centre",  pref:["514-017-26","514-021-25"],                            type:"casa_condo", duo:false },
+  { name:"Rachid",     full:"Rachid Ait Idir",        zone:"Montréal",        pref:["514-016-26","514-017-26","514-021-25"],                type:"casa_condo", duo:false },
+  { name:"Pape",       full:"Pape Alioune Sy",        zone:"Côte-des-Neiges", pref:["514-021-25","514-016-26"],                            type:"casa_condo", duo:false },
+  { name:"Kinsley",    full:"Kinsley Boileau",        zone:"RDP/NE Montréal", pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false },
+  { name:"Jennings",   full:"Jennings Mathurin",      zone:"Rive-Nord",       pref:["514-012-017","514-014-25"],                           type:"casa_condo", duo:false },
+  { name:"Alex",       full:"Alexandre Germain",      zone:"Laval",           pref:["514-012-017","514-014-25"],                           type:"casa_condo", duo:false },
+  { name:"Daniel",     full:"Daniel Mpeng",           zone:"Laval",           pref:["514-012-017","514-014-25"],                           type:"casa_condo", duo:false },
+  { name:"Thierno",    full:"Thierno I.S. Bah",       zone:"Côte-des-Neiges", pref:["514-019-26","514-020-26"],                            type:"duo",        duo:true  },
+  { name:"Carson",     full:"Carson Alphonse",        zone:"RDP/NE Montréal", pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false },
+  { name:"Yanis",      full:"Yanis Ferdji",           zone:"Anjou/Est",       pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false },
+  { name:"Edgard",     full:"Edgard Marvens Jeanith", zone:"Laval",           pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3"], type:"murale",     duo:false },
+  { name:"Gabriele",   full:"Gabriele Biunno",        zone:"RDP/NE Montréal", pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3","Hyundai (1)"], type:"murale", duo:false },
 ];
 
 const FLEET = [
-  { id:"514-012-017",    depot:"30 Rue Lefort, Laval",                   secteur:"Laval",       type:"casa_condo", duo:false, cap:1 },
-  { id:"514-010-015",    depot:"5555 Rue d'Iberville, Montréal",         secteur:"Rosemont/NE", type:"casa_condo", duo:false, cap:1 },
-  { id:"514-014-25",     depot:"30 Rue Lefort, Laval",                   secteur:"Laval",       type:"casa_condo", duo:false, cap:1 },
-  { id:"514-016-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1 },
-  { id:"514-017-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1 },
-  { id:"514-019-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2 },
-  { id:"514-020-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2 },
-  { id:"514-021-25",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1 },
-  { id:"Grand Caravan 1",depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
-  { id:"Grand Caravan 2",depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
-  { id:"Grand Caravan 3",depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
-  { id:"Hyundai (1)",    depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
-  { id:"Mazda (1)",      depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
+  { id:"514-012-017",    depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, lastResort:false },
+  { id:"514-010-015",    depot:"5555 Rue d'Iberville, Montréal",     secteur:"Rosemont/NE", type:"casa_condo", duo:false, cap:1, lastResort:true  },
+  { id:"514-014-25",     depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, lastResort:false },
+  { id:"514-016-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, lastResort:false },
+  { id:"514-017-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, lastResort:false },
+  { id:"514-019-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, lastResort:false },
+  { id:"514-020-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, lastResort:false },
+  { id:"514-021-25",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, lastResort:false },
+  { id:"Grand Caravan 1",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, lastResort:false },
+  { id:"Grand Caravan 2",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, lastResort:false },
+  { id:"Grand Caravan 3",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, lastResort:false },
+  { id:"Hyundai (1)",    depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, lastResort:false },
+  { id:"Mazda (1)",      depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, lastResort:false },
 ];
 
 const SCHEDULE = {
@@ -253,22 +234,23 @@ const SCHEDULE = {
   "Yanis":      ["On call","A voir","A voir","A voir","A voir","Off","Off"],
 };
 
-let importedJobs = {};
+let importedData = {};
 let overrides = {};
 let validated = {};
-let lastAssignments = {};
+let lastResults = {};
+let activeDayISO = null;
 
-function getStatus(techName, dateStr) {
-  const d = new Date(dateStr + "T00:00:00");
-  const dow = d.getDay();
-  const idx = dow === 0 ? 6 : dow - 1;
+function getStatus(techName, isoDate) {
+  const d = new Date(isoDate + "T00:00:00");
+  const idx = d.getDay() === 0 ? 6 : d.getDay() - 1;
   return (SCHEDULE[techName] || [])[idx] || "Off";
 }
 
-function score(tech, camion) {
+function scoreCamion(tech, camion) {
   if (tech.type === "murale" && camion.type !== "murale") return -999;
   if (tech.type !== "murale" && camion.type === "murale") return -999;
   if (tech.duo && !camion.duo) return -999;
+  if (camion.lastResort) return 1; // last resort — only if nothing else
   let s = 100;
   const pi = tech.pref.indexOf(camion.id);
   if (pi === 0) s += 50;
@@ -278,360 +260,336 @@ function score(tech, camion) {
   return s;
 }
 
-function runAssignment() {
-  const dateVal = document.getElementById("plan-date").value;
-  if (!dateVal) { setStatus("Sélectionner une date."); return; }
-
-  const activeTechs = TECHS.filter(t => {
-    const st = getStatus(t.name, dateVal);
-    return st === "A voir" || st === "Duo";
-  });
+function computeDay(isoDate) {
+  const dayJobs = importedData[isoDate] || {};
+  const dayOverrides = overrides[isoDate] || {};
+  const activeTechs = Object.keys(dayJobs).length > 0
+    ? TECHS.filter(t => dayJobs[t.name])
+    : TECHS.filter(t => { const s = getStatus(t.name, isoDate); return s === "A voir" || s === "Duo"; });
 
   const usage = {};
-  lastAssignments = {};
-  const conflicts = [];
+  const assignments = {};
 
   for (const tech of activeTechs) {
-    const st = getStatus(tech.name, dateVal);
-    if (overrides[tech.name]) {
-      const cid = overrides[tech.name];
+    const status = getStatus(tech.name, isoDate) || "A voir";
+    if (dayOverrides[tech.name]) {
+      const cid = dayOverrides[tech.name];
       usage[cid] = (usage[cid] || 0) + 1;
-      lastAssignments[tech.name] = { camion: cid, status: st, override: true };
+      const c = FLEET.find(f => f.id === cid);
+      assignments[tech.name] = { camion: cid, status, override: true, depot: c?.depot, lastResort: c?.lastResort };
       continue;
     }
-    const eligible = FLEET.filter(c => {
-      const used = usage[c.id] || 0;
-      return used < c.cap;
-    });
-    const ranked = eligible
-      .map(c => ({ c, s: score(tech, c) }))
-      .filter(x => x.s > 0)
-      .sort((a, b) => b.s - a.s);
+    const eligible = FLEET.filter(c => (usage[c.id] || 0) < c.cap);
+    const ranked = eligible.map(c => ({ c, s: scoreCamion(tech, c) })).filter(x => x.s > 0).sort((a,b) => b.s - a.s);
     if (ranked.length === 0) {
-      lastAssignments[tech.name] = { camion: null, status: st, conflict: true };
-      conflicts.push(tech.full);
+      assignments[tech.name] = { camion: null, status, conflict: true };
     } else {
       const best = ranked[0].c;
       usage[best.id] = (usage[best.id] || 0) + 1;
-      lastAssignments[tech.name] = { camion: best.id, depot: best.depot, secteur: best.secteur, status: st };
+      assignments[tech.name] = { camion: best.id, status, depot: best.depot, secteur: best.secteur, lastResort: best.lastResort };
     }
   }
-
-  const validatedCount = Object.keys(validated).filter(k => validated[k] && lastAssignments[k]).length;
-  document.getElementById("m-active").textContent = activeTechs.length;
-  document.getElementById("m-assigned").textContent = Object.values(lastAssignments).filter(a => a.camion && !a.conflict).length;
-  document.getElementById("m-conflicts").textContent = conflicts.length;
-  document.getElementById("m-validated").textContent = validatedCount;
-
-  const banner = document.getElementById("conflict-banner");
-  if (conflicts.length > 0) {
-    banner.innerHTML = `<div class="conflict-warning">Aucun camion disponible pour : <strong>${conflicts.join(", ")}</strong>. Assigner manuellement via le menu override.</div>`;
-  } else {
-    banner.innerHTML = "";
-  }
-
-  renderResults(dateVal, activeTechs);
-  setStatus("Assignations calculées.");
+  return { assignments, activeTechs };
 }
 
-function renderResults(dateVal, activeTechs) {
-  const el = document.getElementById("assignment-results");
-  if (activeTechs.length === 0) {
-    el.innerHTML = '<div class="empty-state">Aucun technicien actif ce jour.</div>';
-    return;
+function runAllDays() {
+  const dates = Object.keys(importedData).sort();
+  const runDates = dates.length > 0 ? dates : [new Date().toISOString().split("T")[0]];
+  lastResults = {};
+  for (const d of runDates) lastResults[d] = computeDay(d);
+  renderAllDays(runDates);
+  updateGlobalMetrics(runDates);
+  document.getElementById("planning-empty").style.display = "none";
+  document.getElementById("global-metrics").style.display = "block";
+  setStatus("Assignations calculées pour " + runDates.length + " journée" + (runDates.length > 1 ? "s" : "") + ".");
+}
+
+function renderAllDays(dates) {
+  const tabBar = document.getElementById("day-tab-bar");
+  const panels = document.getElementById("day-panels");
+  tabBar.style.display = "flex";
+  tabBar.innerHTML = "";
+  panels.innerHTML = "";
+  const daysFr = ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
+  const monthsFr = ["jan","fév","mar","avr","mai","juin","juil","août","sep","oct","nov","déc"];
+  if (!activeDayISO || !dates.includes(activeDayISO)) activeDayISO = dates[0];
+
+  for (const iso of dates) {
+    const d = new Date(iso + "T00:00:00");
+    const label = `${daysFr[d.getDay()]} ${d.getDate()} ${monthsFr[d.getMonth()]}`;
+    const res = lastResults[iso];
+    const hasConflict = res && Object.values(res.assignments).some(a => a.conflict);
+    const tab = document.createElement("div");
+    tab.className = "day-tab" + (iso === activeDayISO ? " active" : "") + (hasConflict ? " has-conflict" : "");
+    tab.textContent = label;
+    tab.onclick = () => switchDay(iso, dates);
+    tabBar.appendChild(tab);
+    const panel = document.createElement("div");
+    panel.id = "panel-" + iso;
+    panel.className = "day-panel" + (iso === activeDayISO ? " active" : "");
+    panel.innerHTML = buildDayHTML(iso, res);
+    panels.appendChild(panel);
   }
+}
 
-  const d = new Date(dateVal + "T00:00:00");
-  const days = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-  const months = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+function buildDayHTML(iso, res) {
+  if (!res) return '<div class="empty-state">Aucune donnée.</div>';
+  const { assignments, activeTechs } = res;
+  const dayJobs = importedData[iso] || {};
+  const dayVal = validated[iso] || {};
+  if (activeTechs.length === 0) return '<div class="empty-state">Aucun technicien actif ce jour.</div>';
 
-  let html = `<div style="font-size:12px;color:var(--text2);font-weight:500;margin-bottom:12px;">${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}</div>`;
+  const conflicts = Object.values(assignments).filter(a => a.conflict);
+  const lastResortCount = Object.values(assignments).filter(a => a.lastResort && !a.conflict).length;
+  let html = "";
+  if (conflicts.length > 0) html += `<div class="error-box">Aucun camion disponible pour ${conflicts.length} technicien(s) — assigner manuellement via override.</div>`;
+  if (lastResortCount > 0) html += `<div class="warn-box">⚠ ${lastResortCount} technicien(s) assigné(s) au camion de dernier recours (514-010-015 — état dégradé). Vérifier si un autre camion peut être libéré.</div>`;
 
   for (const tech of activeTechs) {
-    const asgn = lastAssignments[tech.name];
+    const asgn = assignments[tech.name];
     if (!asgn) continue;
-    const job = importedJobs[tech.name];
-    const isVal = validated[tech.name];
-    const avatarBg = tech.type === "murale" ? "var(--green-bg)" : (tech.duo ? "var(--purple-bg)" : "var(--blue-bg)");
-    const avatarColor = tech.type === "murale" ? "var(--green-text)" : (tech.duo ? "var(--purple-text)" : "var(--blue-text)");
+    const job = dayJobs[tech.name];
+    const isVal = dayVal[tech.name];
+    const isLastResort = asgn.lastResort && !asgn.conflict;
+    const avatarBg = tech.type==="murale" ? "var(--green-bg)" : tech.duo ? "var(--purple-bg)" : "var(--blue-bg)";
+    const avatarColor = tech.type==="murale" ? "var(--green-text)" : tech.duo ? "var(--purple-text)" : "var(--blue-text)";
 
-    html += `<div class="tech-card ${asgn.conflict ? 'conflict' : ''} ${isVal ? 'validated' : ''}">
+    html += `<div class="tech-card ${asgn.conflict?'conflict':''} ${isVal?'validated':''} ${isLastResort&&!isVal?'lastresort':''}">
       <div class="tech-header">
         <div class="tech-info">
           <div class="avatar" style="background:${avatarBg};color:${avatarColor};">${tech.name.substring(0,2).toUpperCase()}</div>
-          <div>
-            <div class="tech-name">${tech.full}</div>
-            <div class="tech-zone">${tech.zone}</div>
-          </div>
+          <div><div class="tech-name">${tech.full}</div><div class="tech-zone">${tech.zone}</div></div>
         </div>
         <div class="tech-badges">
-          ${asgn.status === "Duo" ? '<span class="badge b-duo">DUO</span>' : ''}
-          ${asgn.override ? '<span class="badge b-override">Override</span>' : ''}
-          ${asgn.conflict ? '<span class="badge b-conflict">Conflit</span>' : ''}
-          ${isVal ? '<span class="badge b-active">✓ Validé</span>' : ''}
+          ${asgn.status==="Duo"?'<span class="badge b-duo">DUO</span>':''}
+          ${asgn.override?'<span class="badge b-override">Override</span>':''}
+          ${asgn.conflict?'<span class="badge b-conflict">Conflit</span>':''}
+          ${isLastResort?'<span class="badge b-lastresort">Dernier recours</span>':''}
+          ${isVal?'<span class="badge" style="background:var(--green-bg);color:var(--green-text);">✓ Validé</span>':''}
         </div>
       </div>
-
       <div class="assignment-line">
         ${asgn.conflict
           ? '<span style="font-size:12px;color:var(--red-text);">Aucun camion éligible — assigner via override</span>'
-          : `<span class="camion-pill">${asgn.camion}</span><span class="depot-text">${asgn.depot || ''}</span>`
-        }
+          : `<span class="camion-pill ${isLastResort?'lastresort':''}">${asgn.camion}</span><span class="depot-text">${asgn.depot||''}</span>`}
       </div>
-
-      ${job ? `<div class="job-line">
-        <span class="job-label">1ère job :</span>
-        <span class="job-addr">${job.address}</span>
-        ${job.allAddresses && job.allAddresses.length > 1 ? `<span class="badge" style="background:var(--gray-bg);color:var(--gray-text);">${job.allAddresses.length} jobs</span>` : ''}
-      </div>` : ''}
-
+      ${job&&job.address ? `<div class="job-line"><span class="job-label">1ère job :</span><span class="job-addr">${job.address}</span>${job.allAddresses&&job.allAddresses.length>1?`<span class="badge" style="background:var(--gray-bg);color:var(--gray-text);">${job.allAddresses.length} jobs</span>`:''}</div>` : ''}
       <div class="override-row">
         <span class="override-label">Override :</span>
-        <select class="override-select" onchange="applyOverride('${tech.name}', this.value)">
+        <select class="override-select" onchange="applyOverride('${iso}','${tech.name}',this.value)">
           <option value="">— Décision moteur —</option>
-          ${FLEET.filter(c => c.type === tech.type || (tech.duo && c.duo) || tech.type === 'casa_condo').map(c =>
-            `<option value="${c.id}" ${overrides[tech.name] === c.id ? 'selected' : ''}>${c.id} (${c.secteur})</option>`
-          ).join('')}
+          ${FLEET.map(c=>`<option value="${c.id}" ${(overrides[iso]||{})[tech.name]===c.id?'selected':''}>${c.id}${c.lastResort?' ⚠':''} (${c.secteur})</option>`).join('')}
         </select>
-        ${overrides[tech.name] ? `<button class="danger-sm" onclick="clearOverride('${tech.name}')">Retirer</button>` : ''}
+        ${(overrides[iso]||{})[tech.name]?`<button class="danger-sm" onclick="clearOverride('${iso}','${tech.name}')">Retirer</button>`:''}
       </div>
-
       <div class="validate-row">
         <label class="validate-check">
-          <input type="checkbox" ${isVal ? 'checked' : ''} onchange="toggleValidate('${tech.name}', this.checked)" />
+          <input type="checkbox" ${isVal?'checked':''} onchange="toggleValidate('${iso}','${tech.name}',this.checked)" />
           Validé VP — camion communiqué au technicien
         </label>
       </div>
     </div>`;
   }
-
-  el.innerHTML = html;
+  return html;
 }
 
-function applyOverride(techName, camionId) {
-  if (!camionId) { delete overrides[techName]; }
-  else { overrides[techName] = camionId; }
-  const dateVal = document.getElementById("plan-date").value;
-  if (dateVal) runAssignment();
+function switchDay(iso, dates) {
+  activeDayISO = iso;
+  dates.forEach((d,i) => {
+    const p = document.getElementById("panel-"+d);
+    if (p) p.className = "day-panel" + (d===iso?" active":"");
+    const tabs = document.querySelectorAll(".day-tab");
+    if (tabs[i]) tabs[i].classList.toggle("active", d===iso);
+  });
 }
 
-function clearOverride(techName) {
-  delete overrides[techName];
-  const dateVal = document.getElementById("plan-date").value;
-  if (dateVal) runAssignment();
-}
-
-function toggleValidate(techName, checked) {
-  validated[techName] = checked;
-  const vals = Object.keys(validated).filter(k => validated[k] && lastAssignments[k]).length;
-  document.getElementById("m-validated").textContent = vals;
-  const asgn = lastAssignments[techName];
-  if (asgn) {
-    const cards = document.querySelectorAll(".tech-card");
-    runAssignment();
+function updateGlobalMetrics(dates) {
+  let a=0,b=0,c=0,lr=0;
+  for (const d of dates) {
+    const r = lastResults[d]; if(!r) continue;
+    a += r.activeTechs.length;
+    b += Object.values(r.assignments).filter(x=>x.camion&&!x.conflict).length;
+    c += Object.values(r.assignments).filter(x=>x.conflict).length;
+    lr += Object.values(r.assignments).filter(x=>x.lastResort&&!x.conflict).length;
   }
+  document.getElementById("m-days").textContent = dates.length;
+  document.getElementById("m-active").textContent = a;
+  document.getElementById("m-assigned").textContent = b;
+  document.getElementById("m-conflicts").textContent = c;
+  document.getElementById("m-lastresort").textContent = lr;
+}
+
+function applyOverride(iso, techName, camionId) {
+  if (!overrides[iso]) overrides[iso] = {};
+  if (!camionId) delete overrides[iso][techName]; else overrides[iso][techName] = camionId;
+  lastResults[iso] = computeDay(iso);
+  const dates = Object.keys(lastResults).sort();
+  renderAllDays(dates);
+  updateGlobalMetrics(dates);
+}
+
+function clearOverride(iso, techName) { applyOverride(iso, techName, ""); }
+
+function toggleValidate(iso, techName, checked) {
+  if (!validated[iso]) validated[iso] = {};
+  validated[iso][techName] = checked;
+  updateGlobalMetrics(Object.keys(lastResults).sort());
+  const p = document.getElementById("panel-"+iso);
+  if (p) p.innerHTML = buildDayHTML(iso, lastResults[iso]);
+}
+
+function splitCSVLine(line) {
+  const r=[]; let cur="", inQ=false;
+  for (const ch of line) {
+    if (ch==='"') inQ=!inQ;
+    else if (ch===','&&!inQ) { r.push(cur.trim()); cur=""; }
+    else cur+=ch;
+  }
+  r.push(cur.trim()); return r;
 }
 
 function parseCSV() {
   const raw = document.getElementById("csv-input").value.trim();
   if (!raw) return;
-  const lines = raw.split("\n").map(l => l.trim()).filter(l => l);
-  if (lines.length < 2) { document.getElementById("import-status").textContent = "Fichier vide ou invalide."; return; }
+  const lines = raw.split("\n").map(l=>l.trim()).filter(l=>l);
+  if (lines.length < 2) { document.getElementById("import-status").textContent="Fichier vide."; return; }
 
-  const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase().replace(/"/g, "").trim());
-  const fi = (keywords) => headers.findIndex(h => keywords.some(k => h.includes(k)));
+  const headers = splitCSVLine(lines[0]).map(h=>h.toLowerCase().replace(/"/g,"").trim());
+  const fi = kws => headers.findIndex(h=>kws.some(k=>h.includes(k)));
+  const visitIdx  = fi(["visits assigned to","assigned to"]);
+  const streetIdx = fi(["service street"]);
+  const cityIdx   = fi(["service city"]);
+  const dateIdx   = fi(["scheduled start date","scheduled start"]);
 
-  // Colonnes format Jobber natif
-  const visitIdx   = fi(["visits assigned to", "assigned to"]);
-  const streetIdx  = fi(["service street"]);
-  const cityIdx    = fi(["service city"]);
-  const dateIdx    = fi(["scheduled start date", "scheduled start"]);
-  // Fallback format simple
-  const techIdx    = fi(["technicien","tech"]);
-  const addrIdx    = fi(["première adresse","premiere adresse","first address","adresse"]);
-
-  const isJobberNative = visitIdx !== -1 && streetIdx !== -1;
-  const isSimple = techIdx !== -1 && addrIdx !== -1;
-
-  if (!isJobberNative && !isSimple) {
-    document.getElementById("import-status").textContent = "Format non reconnu. Colonnes attendues : 'Visits assigned to' + 'Service street' (Jobber natif).";
+  if (visitIdx === -1) {
+    document.getElementById("import-status").textContent = "Colonne 'Visits assigned to' non trouvée. Vérifier le format Jobber.";
     return;
   }
 
-  // Regrouper par tech — plusieurs jobs par tech possibles
-  const techJobs = {};
-
-  for (let i = 1; i < lines.length; i++) {
+  const byDate = {};
+  for (let i=1; i<lines.length; i++) {
     const cols = splitCSVLine(lines[i]);
-    if (!cols.length) continue;
+    const rawTech = (cols[visitIdx]||"").replace(/"/g,"").trim();
+    if (!rawTech || rawTech.toLowerCase().includes("dummy") || rawTech.toLowerCase()==="off") continue;
 
-    let rawTech = "", address = "", date = "";
-
-    if (isJobberNative) {
-      rawTech = (cols[visitIdx] || "").replace(/"/g, "").trim();
-      const street = (cols[streetIdx] || "").replace(/"/g, "").trim();
-      const city   = (cols[cityIdx]   || "").replace(/"/g, "").trim();
-      address = [street, city].filter(Boolean).join(", ");
-      date    = (cols[dateIdx]  || "").replace(/"/g, "").trim();
-    } else {
-      rawTech = (cols[techIdx]  || "").replace(/"/g, "").trim();
-      address = (cols[addrIdx]  || "").replace(/"/g, "").trim();
-      date    = dateIdx >= 0 ? (cols[dateIdx] || "").replace(/"/g, "").trim() : "";
-    }
-
-    if (!rawTech || rawTech.toLowerCase().includes("dummy") || rawTech.toLowerCase() === "off") continue;
-
-    // Extraire le nom du tech depuis format Jobber "A - Mural - Edgard Marvens Jeanith" ou "B - Casa - Kinsley Boileau"
     let cleanName = rawTech;
-    const dashMatch = rawTech.match(/[-–]\s*(?:Mural|Casa|Condo)\s*[-–]\s*(.+)/i);
-    if (dashMatch) cleanName = dashMatch[1].trim();
+    const m = rawTech.match(/[-–]\s*(?:Mural|Casa|Condo|Murale)\s*[-–]\s*(.+)/i);
+    if (m) cleanName = m[1].trim();
 
-    // Matcher avec la liste TECHS
     const matchedTech = TECHS.find(t => {
-      const fullLower = t.full.toLowerCase();
-      const cleanLower = cleanName.toLowerCase();
-      return fullLower === cleanLower ||
-        fullLower.startsWith(cleanLower.split(" ")[0].toLowerCase()) ||
-        cleanLower.includes(t.name.toLowerCase()) ||
-        t.full.toLowerCase().includes(cleanLower.split(" ")[0].toLowerCase());
+      const fl=t.full.toLowerCase(), cl=cleanName.toLowerCase();
+      return fl===cl || cl.startsWith(fl.split(" ")[0]) || fl.startsWith(cl.split(" ")[0]) || cl.includes(t.name.toLowerCase());
     });
-
     const key = matchedTech ? matchedTech.name : cleanName.split(" ")[0];
 
-    if (!techJobs[key]) techJobs[key] = { addresses: [], date, rawName: cleanName };
-    if (address) techJobs[key].addresses.push(address);
+    const street = streetIdx>=0 ? (cols[streetIdx]||"").replace(/"/g,"").trim() : "";
+    const city   = cityIdx>=0   ? (cols[cityIdx]||"").replace(/"/g,"").trim()   : "";
+    const addr   = [street,city].filter(Boolean).join(", ");
 
-    // Mettre à jour la date si disponible
-    if (date && !techJobs[key].date) techJobs[key].date = date;
+    let isoDate = "unknown";
+    if (dateIdx>=0 && cols[dateIdx]) {
+      const p = new Date(cols[dateIdx].replace(/"/g,"").trim());
+      if (!isNaN(p)) isoDate = p.toISOString().split("T")[0];
+    }
+
+    if (!byDate[isoDate]) byDate[isoDate]={};
+    if (!byDate[isoDate][key]) byDate[isoDate][key]={ addresses:[], rawName:cleanName };
+    if (addr) byDate[isoDate][key].addresses.push(addr);
   }
 
-  // Construire importedJobs avec la première adresse de chaque tech
-  importedJobs = {};
-  for (const [key, data] of Object.entries(techJobs)) {
-    importedJobs[key] = {
-      address: data.addresses[0] || "",
-      allAddresses: data.addresses,
-      date: data.date,
-      rawName: data.rawName,
-    };
-  }
-
-  // Auto-remplir la date si toutes les jobs sont le même jour
-  const dates = [...new Set(Object.values(importedJobs).map(j => j.date).filter(Boolean))];
-  if (dates.length === 1 && dates[0]) {
-    // Convertir "May 02, 2026" → "2026-05-02"
-    const parsed = new Date(dates[0]);
-    if (!isNaN(parsed)) {
-      const iso = parsed.toISOString().split("T")[0];
-      document.getElementById("plan-date").value = iso;
+  importedData = {};
+  for (const [iso, techMap] of Object.entries(byDate)) {
+    if (iso==="unknown") continue;
+    importedData[iso]={};
+    for (const [key,data] of Object.entries(techMap)) {
+      importedData[iso][key]={ address:data.addresses[0]||"", allAddresses:data.addresses, rawName:data.rawName };
     }
   }
 
-  const n = Object.keys(importedJobs).length;
-  const totalJobs = Object.values(importedJobs).reduce((s, j) => s + (j.allAddresses?.length || 1), 0);
-  document.getElementById("import-status").textContent =
-    `${n} technicien${n>1?'s':''} · ${totalJobs} job${totalJobs>1?'s':''} · 1ères adresses extraites automatiquement.`;
+  const nD = Object.keys(importedData).length;
+  const nT = Object.values(importedData).reduce((s,d)=>s+Object.keys(d).length,0);
+  document.getElementById("import-status").textContent = `${nD} journée${nD>1?'s':''} · ${nT} assignations importées.`;
   switchTab("planning");
 }
 
-function splitCSVLine(line) {
-  const result = [];
-  let current = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') { inQuotes = !inQuotes; }
-    else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ""; }
-    else { current += ch; }
-  }
-  result.push(current.trim());
-  return result;
-}
-
 function clearImport() {
-  importedJobs = {};
-  document.getElementById("csv-input").value = "";
-  document.getElementById("import-status").textContent = "Données effacées.";
+  importedData={};
+  document.getElementById("csv-input").value="";
+  document.getElementById("import-status").textContent="Données effacées.";
 }
 
 function loadDemo() {
-  document.getElementById("csv-input").value =
+  document.getElementById("csv-input").value=
 `Job #,Client name,Lead source,Client email,Client phone,Billing street,Billing city,Billing province,Billing ZIP,Service property name,Service street,Service city,Service province,Service ZIP,Title,Created date,Scheduled start date,Closed date,Salesperson,Line items,Visits assigned to,Invoice #s
-276047570,Maria Weinrauch,DuraClim Automations,mariabweinrauch@gmail.com,(514) 442-2287,64 Rue Lucien-Thériault,Notre-Dame-de-l'Île-Perrot,Québec,J7W 1T6,,64 Rue Lucien-Thériault,Notre-Dame-de-l'Île-Perrot,Québec,J7W 1T6,Mural + dryer,"Apr 30, 2026","May 06, 2026",-,,Nettoyage murale,B - Casa - Pape Alioune Sy,""
-276047561,Adriana Thomas,DuraClim Automations,atgomez14@gmail.com,(438) 828-4196,8441 Av. Casgrain,Montréal,Québec,H2P 2K7,,8441 Av. Casgrain,Montréal,Québec,H2P 2K7,Murale,"Apr 30, 2026","May 06, 2026",-,,Nettoyage murale,B - Casa - Kinsley Boileau,""
-276047489,Erin Flanagan,DuraClim Automations,flanagan@gmail.com,(438) 821-9955,5390 Boulevard Saint-Laurent,Montréal,Québec,H2T 1S1,,5390 Boulevard Saint-Laurent,Montréal,Québec,H2T 1S1,Echangeur + Murales,"Apr 29, 2026","May 06, 2026",-,,Nettoyage,B - Casa - Kinsley Boileau,""
-276046994,Palina Zh.,DuraClim Automations,palinazh@hotmail.com,(514) 453-1000,1327 Rue Des Cyprès,Pincourt,Québec,J7W 0A8,,1327 Rue Des Cyprès,Pincourt,Québec,J7W 0A8,Nettoyage Murale,"Apr 24, 2026","May 06, 2026",-,,Nettoyage,B - Casa - Pape Alioune Sy,""
-276042149,Antoine Ahizi,DuraClim Automations,Houamian@hotmail.com,(514) 295-4145,8205 Rue Angèle,Laval,Québec,H7A 3B4,,8205 Rue Angèle,Laval,Québec,H7A 3B4,murale+secheuse,"Dec 26, 2025","May 06, 2026",-,,Nettoyage,B - Casa - Alexandre Germain,""
-276044976,Michel Lesage,DuraClim Automations,michel@gmail.com,(514) 240-5917,1 Rue Édouard-Lalonde,Vaudreuil-Dorion,Québec,J7V 0H7,,1 Rue Édouard-Lalonde,Vaudreuil-Dorion,Québec,J7V 0H7,2 murales,"Mar 20, 2026","May 06, 2026",-,,Nettoyage,A - Mural - Edgard Marvens Jeanith,""`;
+1,Maria Weinrauch,DuraClim,m@gmail.com,(514) 442-2287,64 Rue Lucien-Thériault,Notre-Dame-de-l'Île-Perrot,Québec,J7W 1T6,,64 Rue Lucien-Thériault,Notre-Dame-de-l'Île-Perrot,Québec,J7W 1T6,Mural,"Apr 30, 2026","May 06, 2026",-,,Nettoyage,B - Casa - Pape Alioune Sy,""
+2,Adriana Thomas,DuraClim,a@gmail.com,(438) 828-4196,8441 Av. Casgrain,Montréal,Québec,H2P 2K7,,8441 Av. Casgrain,Montréal,Québec,H2P 2K7,Murale,"Apr 30, 2026","May 06, 2026",-,,Nettoyage,B - Casa - Kinsley Boileau,""
+3,Erin Flanagan,DuraClim,e@gmail.com,(438) 821-9955,5390 Boulevard Saint-Laurent,Montréal,Québec,H2T 1S1,,5390 Boulevard Saint-Laurent,Montréal,Québec,H2T 1S1,Echangeur,"Apr 29, 2026","May 06, 2026",-,,Nettoyage,B - Casa - Alexandre Germain,""
+4,Michel Lesage,DuraClim,ml@gmail.com,(514) 240-5917,1 Rue Édouard-Lalonde,Vaudreuil-Dorion,Québec,J7V 0H7,,1 Rue Édouard-Lalonde,Vaudreuil-Dorion,Québec,J7V 0H7,2 murales,"Mar 20, 2026","May 06, 2026",-,,Nettoyage,A - Mural - Edgard Marvens Jeanith,""
+5,Jean Tremblay,DuraClim,jt@gmail.com,(514) 111-2222,1200 Rue Sherbrooke E,Montréal,Québec,H2L 2G9,,1200 Rue Sherbrooke E,Montréal,Québec,H2L 2G9,Centrale,"Apr 30, 2026","May 07, 2026",-,,Nettoyage,B - Casa - Christopher Sulyvan,""
+6,Sophie Bernard,DuraClim,sb@gmail.com,(514) 333-4444,450 Rue Saint-Denis,Montréal,Québec,H2X 3L1,,450 Rue Saint-Denis,Montréal,Québec,H2X 3L1,Murale,"Apr 30, 2026","May 07, 2026",-,,Nettoyage,B - Casa - Israel Mpoyi,""
+7,Fatou Diallo,DuraClim,fd@gmail.com,(514) 555-6666,3900 Boul. des Sources,Dollard-des-Ormeaux,Québec,H9B 2J1,,3900 Boul. des Sources,Dollard-des-Ormeaux,Québec,H9B 2J1,Centrale,"Apr 30, 2026","May 07, 2026",-,,Nettoyage,B - Casa - Mohamed Fofana,""`;
   parseCSV();
 }
 
-function exportCSV() {
-  const dateVal = document.getElementById("plan-date").value;
-  if (!dateVal || Object.keys(lastAssignments).length === 0) { setStatus("Calculer d'abord les assignations."); return; }
-  let csv = "Technicien,Statut,Camion assigné,Dépôt,Override,Validé VP,Date\n";
-  for (const [name, asgn] of Object.entries(lastAssignments)) {
-    const tech = TECHS.find(t => t.name === name);
-    csv += `"${tech?.full || name}","${asgn.status}","${asgn.camion || 'CONFLIT'}","${asgn.depot || ''}","${asgn.override ? 'Oui' : 'Non'}","${validated[name] ? 'Oui' : 'Non'}","${dateVal}"\n`;
+function exportAllCSV() {
+  if (!Object.keys(lastResults).length) { setStatus("Calculer d'abord."); return; }
+  let csv="Date,Technicien,Statut,Camion assigné,Dépôt,Dernier recours,Override,Validé VP,1ère adresse\n";
+  for (const [iso,res] of Object.entries(lastResults).sort()) {
+    const dJ=importedData[iso]||{}, dV=validated[iso]||{};
+    for (const [n,asgn] of Object.entries(res.assignments)) {
+      const t=TECHS.find(x=>x.name===n), j=dJ[n];
+      csv+=`"${iso}","${t?.full||n}","${asgn.status}","${asgn.camion||'CONFLIT'}","${asgn.depot||''}","${asgn.lastResort?'Oui':'Non'}","${asgn.override?'Oui':'Non'}","${dV[n]?'Oui':'Non'}","${j?.address||''}"\n`;
+    }
   }
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `assignation_camions_${dateVal}.csv`;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));
+  a.download=`assignation_${Object.keys(lastResults).sort()[0]}.csv`;
   a.click();
-  URL.revokeObjectURL(url);
-  setStatus("CSV exporté.");
+  setStatus("Export téléchargé.");
 }
 
 function renderFleet() {
-  const tagClass = { "Laval": "tag-laval", "Rosemont/NE": "tag-iberville", "Mile-End": "tag-stlaurent" };
-  document.getElementById("fleet-grid").innerHTML = FLEET.map(c => `
+  const tC={"Laval":"tag-laval","Rosemont/NE":"tag-iberville","Mile-End":"tag-stlaurent"};
+  document.getElementById("fleet-grid").innerHTML=FLEET.map(c=>`
     <div class="fleet-card">
-      <div class="fleet-name">${c.id}</div>
+      <div class="fleet-name">${c.id}${c.lastResort?' <span style="font-size:10px;color:#854f0b;">⚠ dernier recours</span>':''}</div>
       <div class="fleet-depot">${c.depot}</div>
       <div class="fleet-tags">
-        <span class="tag ${tagClass[c.secteur] || ''}">${c.secteur}</span>
-        ${c.duo ? '<span class="tag tag-duo">DUO · 2 techs</span>' : '<span class="tag">1 tech</span>'}
+        <span class="tag ${c.lastResort?'tag-lastresort':tC[c.secteur]||''}">${c.secteur}</span>
+        ${c.duo?'<span class="tag tag-duo">DUO · 2 techs</span>':'<span class="tag">1 tech</span>'}
         <span class="tag">${c.type}</span>
       </div>
     </div>`).join('');
 }
 
 function renderRules() {
-  const rules = [
-    ["Priorité 1 — Compatibilité type", "Camion CASA/Condo → techs CASA/Condo uniquement. Caravans/Hyundai/Mazda → techs Murale uniquement. Aucune exception."],
-    ["Priorité 2 — Van Duo pour Thierno", "Thierno travaille en Duo. Seuls 514-019-26 et 514-020-26 sont éligibles pour lui. Score −999 pour tout autre camion."],
-    ["Priorité 3 — Préférence par zone", "Chaque tech a une liste ordonnée de camions préférés basée sur la proximité domicile ↔ dépôt. Le premier de la liste disponible est sélectionné."],
-    ["Règle absolue — 1 camion = 1 tech/jour", "Un camion ordinaire (cap. 1) ne peut être assigné qu'à un seul technicien par jour. Les vans duo (cap. 2) acceptent 2 techs maximum."],
-    ["Rive-Nord / Rive-Sud", "Un camion ne couvre jamais les deux rives la même journée. Les techs Laval/Rive-Nord reçoivent les camions du dépôt Lefort en priorité."],
-    ["Override VP", "Le VP peut forcer n'importe quel camion sur n'importe quel tech. L'override remplace entièrement la décision du moteur."],
-    ["Validation VP", "Chaque assignation doit être cochée 'Validé VP' avant communication au technicien. Objectif : 48h minimum avant la journée de travail."],
-    ["On call / Off", "Ces statuts excluent le technicien de toute assignation automatique. Un tech On call peut être activé manuellement via override si besoin urgent."],
+  const rules=[
+    ["Priorité 1 — Compatibilité type","Camion CASA/Condo → techs CASA/Condo. Caravans/Hyundai/Mazda → techs Murale. Aucune exception."],
+    ["Priorité 2 — Van Duo pour Thierno","Thierno travaille en Duo. Seuls 514-019-26 et 514-020-26 sont éligibles. Score −999 pour tout autre camion."],
+    ["Priorité 3 — Liste de préférence par zone","Chaque tech a une liste ordonnée basée sur la proximité domicile ↔ dépôt. Le meilleur camion disponible est sélectionné."],
+    ["Priorité 4 — 514-010-015 en dernier recours","Camion en état dégradé. Score 1 — assigné seulement si aucun autre camion compatible n'est disponible. Avertissement affiché si utilisé."],
+    ["Règle absolue — 1 camion = 1 tech/jour","Capacité 1 pour les camions standard, 2 pour les vans duo (514-019-26 et 514-020-26)."],
+    ["Multi-date","Un export Jobber sur plusieurs jours génère automatiquement une vue par journée. Overrides et validations indépendants par journée."],
+    ["Override VP","Force un camion spécifique sur un tech pour une journée donnée. Remplace entièrement la décision du moteur."],
+    ["Validation VP","Cocher avant de communiquer l'assignation. Objectif : 48h minimum avant la journée de travail."],
   ];
-  document.getElementById("rules-list").innerHTML = rules.map(([t, d]) =>
-    `<div class="rule-item"><div class="rule-title">${t}</div><div class="rule-desc">${d}</div></div>`
-  ).join('');
+  document.getElementById("rules-list").innerHTML=rules.map(([t,d])=>
+    `<div class="rule-item"><div class="rule-title">${t}</div><div class="rule-desc">${d}</div></div>`).join('');
 }
 
 function switchTab(t) {
-  ["planning","import","fleet","rules"].forEach((id, i) => {
-    document.getElementById("tab-" + id).classList.toggle("active", id === t);
-    document.querySelectorAll(".tab")[i].classList.toggle("active", id === t);
+  ["planning","import","fleet","rules"].forEach((id,i)=>{
+    document.getElementById("tab-"+id).classList.toggle("active",id===t);
+    document.querySelectorAll(".tab")[i].classList.toggle("active",id===t);
   });
-  if (t === "fleet") renderFleet();
-  if (t === "rules") renderRules();
+  if(t==="fleet") renderFleet();
+  if(t==="rules") renderRules();
 }
 
-function setStatus(msg) {
-  document.getElementById("status-msg").textContent = msg;
-}
+function setStatus(msg) { document.getElementById("status-msg").textContent=msg; }
 
-const now = new Date();
-document.getElementById("app-date").textContent = now.toLocaleDateString("fr-CA", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
-document.getElementById("plan-date").valueAsDate = now;
-renderFleet();
-renderRules();
+document.getElementById("app-date").textContent=new Date().toLocaleDateString("fr-CA",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+renderFleet(); renderRules();
 </script>
 </body>
 </html>
