@@ -18,6 +18,9 @@
     --purple-bg: #eeedfe; --purple-text: #3c3489;
     --gray-bg: #f1efe8; --gray-text: #5f5e5a;
     --laval: #d5e8d4; --iberville: #fff2cc; --stlaurent: #dae8fc;
+    --rec-bg: #f0f7ff; --rec-border: #b8d8f8; --rec-text: #0c447c;
+    --rec2-bg: #f5f0ff; --rec2-border: #c8b8f8; --rec2-text: #3c3489;
+    --rec3-bg: #fff8f0; --rec3-border: #f8d8b8; --rec3-text: #854f0b;
   }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; color: var(--text); background: var(--bg3); min-height: 100vh; }
   .app { max-width: 980px; margin: 0 auto; padding: 24px 16px; }
@@ -38,31 +41,35 @@
   .day-tab.active { background: #185fa5; color: #fff; border-color: #185fa5; font-weight: 500; }
   .day-tab.has-conflict { border-color: #e24b4a; color: #a32d2d; }
   .day-tab.active.has-conflict { background: #a32d2d; border-color: #a32d2d; color: #fff; }
+  .day-tab.has-rec { border-color: #378add; }
   .day-panel { display: none; }
   .day-panel.active { display: block; }
-  input[type=date], select { font-family: inherit; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 10px; background: var(--bg); color: var(--text); outline: none; }
-  input[type=date]:focus, select:focus { border-color: #378add; }
+  select { font-family: inherit; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 10px; background: var(--bg); color: var(--text); outline: none; }
+  select:focus { border-color: #378add; }
   button { font-family: inherit; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 16px; background: var(--bg); color: var(--text); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
   button:hover { background: var(--bg2); }
   button.primary { background: #185fa5; color: #fff; border-color: #185fa5; }
   button.primary:hover { background: #0c447c; }
+  button.btn-accept { background: var(--green-bg); color: var(--green-text); border-color: #b2d9b2; font-size: 12px; padding: 4px 12px; }
+  button.btn-accept:hover { background: #d0eccc; }
+  button.btn-refuse { background: var(--gray-bg); color: var(--gray-text); border-color: var(--border2); font-size: 12px; padding: 4px 12px; }
+  button.btn-refuse:hover { background: #e8e6df; }
   button.danger-sm { font-size: 12px; padding: 4px 10px; color: var(--red-text); border-color: rgba(162,45,45,0.3); }
   button.danger-sm:hover { background: var(--red-bg); }
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 14px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 14px; }
   .metric { background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; }
   .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
   .metric-value { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
   .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
-  .b-duo    { background: var(--purple-bg); color: var(--purple-text); }
-  .b-fixed  { background: #e8f4e8; color: #27500a; border: 0.5px solid #b2d9b2; }
-  .b-oncall { background: var(--amber-bg); color: var(--amber-text); }
-  .b-conflict { background: var(--red-bg); color: var(--red-text); }
-  .b-override { background: var(--amber-bg); color: var(--amber-text); }
-  .b-lastresort { background: #fff2cc; color: #633806; border: 0.5px solid #e6c96a; }
+  .b-duo     { background: var(--purple-bg); color: var(--purple-text); }
+  .b-fixed   { background: #e8f4e8; color: #27500a; border: 0.5px solid #b2d9b2; }
+  .b-oncall  { background: var(--amber-bg); color: var(--amber-text); }
+  .b-conflict{ background: var(--red-bg); color: var(--red-text); }
+  .b-override{ background: var(--amber-bg); color: var(--amber-text); }
   .tech-card { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; background: var(--bg); }
   .tech-card.conflict  { border-left: 2px solid #e24b4a; }
   .tech-card.validated { border-left: 2px solid #639922; }
-  .tech-card.oncall    { border-left: 2px solid #e6a817; opacity: 0.75; }
+  .tech-card.oncall    { border-left: 2px solid #e6a817; opacity: 0.8; }
   .tech-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
   .tech-info   { display: flex; align-items: center; gap: 10px; }
   .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--blue-text); flex-shrink: 0; }
@@ -82,10 +89,25 @@
   .validate-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
   .validate-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); cursor: pointer; }
   .validate-check input { width: 14px; height: 14px; cursor: pointer; }
-  textarea { font-family: "Menlo","Consolas",monospace; font-size: 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px; width: 100%; background: var(--bg2); color: var(--text); resize: vertical; outline: none; transition: border-color 0.15s; line-height: 1.6; }
+  /* Recommendation cards */
+  .rec-section { margin-bottom: 16px; }
+  .rec-section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text2); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .rec-card { border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; }
+  .rec-card.type1 { background: var(--rec-bg);  border: 0.5px solid var(--rec-border); }
+  .rec-card.type2 { background: var(--rec2-bg); border: 0.5px solid var(--rec2-border); }
+  .rec-card.type3 { background: var(--rec3-bg); border: 0.5px solid var(--rec3-border); }
+  .rec-card.accepted { opacity: 0.5; }
+  .rec-card.refused  { display: none; }
+  .rec-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .rec-title.type1 { color: var(--rec-text); }
+  .rec-title.type2 { color: var(--rec2-text); }
+  .rec-title.type3 { color: var(--rec3-text); }
+  .rec-body  { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; }
+  .rec-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .rec-accepted-label { font-size: 11px; color: var(--green-text); font-weight: 500; }
+  textarea { font-family: "Menlo","Consolas",monospace; font-size: 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px; width: 100%; background: var(--bg2); color: var(--text); resize: vertical; outline: none; line-height: 1.6; }
   textarea:focus { border-color: #378add; }
   .info-box  { background: var(--blue-bg); border: 0.5px solid rgba(24,95,165,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--blue-text); line-height: 1.6; margin-bottom: 12px; }
-  .warn-box  { background: #fff8e6; border: 0.5px solid #e6c96a; border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: #633806; margin-bottom: 10px; }
   .error-box { background: var(--red-bg); border: 0.5px solid rgba(162,45,45,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--red-text); margin-bottom: 10px; }
   .status-text { font-size: 12px; color: var(--text3); }
   .fleet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
@@ -94,11 +116,11 @@
   .fleet-depot { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.4; }
   .fleet-tags  { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
   .tag { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--gray-bg); color: var(--gray-text); }
-  .tag-laval      { background: var(--laval);     color: #27500a; }
-  .tag-iberville  { background: var(--iberville); color: #633806; }
-  .tag-stlaurent  { background: var(--stlaurent); color: #0c447c; }
-  .tag-duo        { background: var(--purple-bg); color: var(--purple-text); }
-  .tag-fixed      { background: #e8f4e8; color: #27500a; border: 0.5px solid #b2d9b2; }
+  .tag-laval     { background: var(--laval);     color: #27500a; }
+  .tag-iberville { background: var(--iberville); color: #633806; }
+  .tag-stlaurent { background: var(--stlaurent); color: #0c447c; }
+  .tag-duo       { background: var(--purple-bg); color: var(--purple-text); }
+  .tag-fixed     { background: #e8f4e8; color: #27500a; border: 0.5px solid #b2d9b2; }
   .rule-item { padding: 12px 0; border-bottom: 0.5px solid var(--border); }
   .rule-item:last-child { border-bottom: none; }
   .rule-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
@@ -115,13 +137,14 @@
   <div class="app-header">
     <div>
       <div class="app-title">Assignation Camions — Montréal</div>
-      <div class="app-subtitle">Moteur de décision · DuraClim 2026</div>
+      <div class="app-subtitle">Moteur de décision + recommandations · DuraClim 2026</div>
     </div>
     <div style="font-size:12px;color:var(--text3);" id="app-date"></div>
   </div>
 
   <div class="tab-bar">
     <div class="tab active" onclick="switchTab('planning')">Planning</div>
+    <div class="tab" onclick="switchTab('recs')">Recommandations <span id="rec-badge" style="display:none;background:#185fa5;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;"></span></div>
     <div class="tab" onclick="switchTab('import')">Import Jobber</div>
     <div class="tab" onclick="switchTab('fleet')">Flotte</div>
     <div class="tab" onclick="switchTab('rules')">Règles</div>
@@ -132,7 +155,7 @@
     <div class="card" style="margin-bottom:12px;">
       <div class="controls">
         <button class="primary" onclick="runAllDays()">Calculer toutes les journées</button>
-        <button onclick="exportAllCSV()">Exporter tout (CSV)</button>
+        <button onclick="exportAllCSV()">Exporter (CSV)</button>
         <span class="status-text" id="status-msg"></span>
       </div>
     </div>
@@ -143,11 +166,17 @@
         <div class="metric"><div class="metric-label">Assignés</div><div class="metric-value" id="m-assigned">—</div></div>
         <div class="metric"><div class="metric-label">Sur appel</div><div class="metric-value" id="m-oncall" style="color:#854f0b;">—</div></div>
         <div class="metric"><div class="metric-label">Conflits</div><div class="metric-value" id="m-conflicts" style="color:#e24b4a;">—</div></div>
+        <div class="metric"><div class="metric-label">Recommandations</div><div class="metric-value" id="m-recs" style="color:#185fa5;">—</div></div>
       </div>
     </div>
     <div id="day-tab-bar" class="day-tab-bar" style="display:none;"></div>
     <div id="day-panels"></div>
-    <div id="planning-empty" class="empty-state">Importer un export Jobber (Visits Report) puis cliquer sur "Calculer toutes les journées".</div>
+    <div id="planning-empty" class="empty-state">Importer un Visits Report Jobber puis cliquer sur "Calculer toutes les journées".</div>
+  </div>
+
+  <!-- RECOMMANDATIONS -->
+  <div id="tab-recs" class="tab-content">
+    <div id="recs-content"><div class="empty-state">Calculer les journées pour générer les recommandations.</div></div>
   </div>
 
   <!-- IMPORT -->
@@ -155,9 +184,9 @@
     <div class="card">
       <div class="section-title">Export Jobber — Visits Report</div>
       <div class="info-box">
-        Utiliser le rapport <strong>Visits Report</strong> (pas One-off jobs).<br>
-        Colonnes lues : <strong>Assigned to</strong> · <strong>Service street + city</strong> · <strong>Times</strong> (heure de début) · <strong>Date</strong> · <strong>Client name</strong><br>
-        La première job est déterminée par l'heure de début la plus tôt. Les jobs "Off" excluent le tech de la journée. Les jobs "Sur appel" sont incluses sans camion assigné.
+        Utiliser le rapport <strong>Visits Report</strong>.<br>
+        Colonnes lues : <strong>Assigned to</strong> · <strong>Service street + city</strong> · <strong>Times</strong> · <strong>Date</strong> · <strong>Client name</strong><br>
+        Off = exclu. Sur appel = inclus sans camion. Première job déterminée par heure de début.
       </div>
       <textarea id="csv-input" rows="10" placeholder="Coller ici l'export Visits Report Jobber..."></textarea>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
@@ -180,7 +209,7 @@
   <!-- RULES -->
   <div id="tab-rules" class="tab-content">
     <div class="card">
-      <div class="section-title">Règles du moteur d'assignation</div>
+      <div class="section-title">Règles du moteur</div>
       <div id="rules-list"></div>
     </div>
   </div>
@@ -189,86 +218,127 @@
 </div>
 
 <script>
-// ─── FLEET ───────────────────────────────────────────────────────────────────
+// ─── FLEET ────────────────────────────────────────────────────────────────────
 const FLEET = [
-  { id:"514-012-017",    depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, fixedTech:"Mohamed",  lastResort:false },
-  { id:"514-010-015",    depot:"5555 Rue d'Iberville, Montréal",     secteur:"Rosemont/NE", type:"casa_condo", duo:false, cap:1, fixedTech:"Lerby",     lastResort:false },
-  { id:"514-014-25",     depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, fixedTech:"Alex",      lastResort:false },
-  { id:"514-016-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null,        lastResort:false },
-  { id:"514-017-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null,        lastResort:false },
-  { id:"514-019-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, fixedTech:null,        lastResort:false },
-  { id:"514-020-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, fixedTech:null,        lastResort:false },
-  { id:"514-021-25",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null,        lastResort:false },
-  { id:"Grand Caravan 1",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null,        lastResort:false },
-  { id:"Grand Caravan 2",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null,        lastResort:false },
-  { id:"Grand Caravan 3",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null,        lastResort:false },
-  { id:"Hyundai (1)",    depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null,        lastResort:false },
-  { id:"Mazda (1)",      depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null,        lastResort:false },
+  { id:"514-012-017",    depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, fixedTech:"Mohamed" },
+  { id:"514-010-015",    depot:"5555 Rue d'Iberville, Montréal",     secteur:"Rosemont/NE", type:"casa_condo", duo:false, cap:1, fixedTech:"Lerby"   },
+  { id:"514-014-25",     depot:"30 Rue Lefort, Laval",               secteur:"Laval",       type:"casa_condo", duo:false, cap:1, fixedTech:"Alex"    },
+  { id:"514-016-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
+  { id:"514-017-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
+  { id:"514-019-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, fixedTech:null      },
+  { id:"514-020-26",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2, fixedTech:null      },
+  { id:"514-021-25",     depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1, fixedTech:null      },
+  { id:"Grand Caravan 1",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
+  { id:"Grand Caravan 2",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
+  { id:"Grand Caravan 3",depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
+  { id:"Hyundai (1)",    depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
+  { id:"Mazda (1)",      depot:"7735 Boul. Saint-Laurent, Montréal", secteur:"Mile-End",    type:"murale",     duo:false, cap:1, fixedTech:null      },
 ];
 
-// ─── TECHS ───────────────────────────────────────────────────────────────────
-// fixedCamion: camion toujours assigné à ce tech s'il est actif
+// ─── TECHS ────────────────────────────────────────────────────────────────────
 const TECHS = [
-  { name:"Mohamed",    full:"Mohamed Fofana",           zone:"Laval",           pref:["514-012-017"],                                       type:"casa_condo", duo:false, fixedCamion:"514-012-017" },
-  { name:"Ali",        full:"Ali Messaoudi",             zone:"Côte-des-Neiges", pref:["514-016-26","514-021-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Christopher",full:"Christopher Sulyvan",       zone:"Plateau/Centre",  pref:["514-016-26","514-017-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Israel",     full:"Israel Mpoyi",              zone:"Plateau/Centre",  pref:["514-017-26","514-021-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Rachid",     full:"Rachid Ait Idir",           zone:"Montréal",        pref:["514-016-26","514-017-26","514-021-25"],                type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Pape",       full:"Pape Alioune Sy",           zone:"Côte-des-Neiges", pref:["514-021-25","514-016-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Kinsley",    full:"Kinsley Boileau",           zone:"RDP/NE Montréal", pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Jennings",   full:"Jennings Mathurin",         zone:"Rive-Nord",       pref:["514-012-017","514-014-25","514-016-26"],               type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Alex",       full:"Alexandre Germain",         zone:"Laval",           pref:["514-014-25"],                                         type:"casa_condo", duo:false, fixedCamion:"514-014-25" },
-  { name:"Daniel",     full:"Daniel Mpeng",              zone:"Laval",           pref:["514-012-017","514-014-25","514-016-26"],               type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Thierno",    full:"Thierno I.S. Bah",          zone:"Côte-des-Neiges", pref:["514-019-26","514-020-26"],                            type:"duo",        duo:true,  fixedCamion:null },
-  { name:"Carson",     full:"Carson Alphonse",           zone:"RDP/NE Montréal", pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Yanis",      full:"Yanis Ferdji",              zone:"Anjou/Est",       pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
-  { name:"Lerby",      full:"Lerby Jean-Calixte",        zone:"RDP/NE Montréal", pref:["514-010-015"],                                        type:"casa_condo", duo:false, fixedCamion:"514-010-015" },
-  { name:"Edgard",     full:"Edgard Marvens Jeanith",   zone:"Laval",           pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3"], type:"murale",     duo:false, fixedCamion:null },
-  { name:"Gabriele",   full:"Gabriele Biunno",           zone:"RDP/NE Montréal", pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3","Hyundai (1)"], type:"murale", duo:false, fixedCamion:null },
+  { name:"Mohamed",    full:"Mohamed Fofana",          zone:"Laval",           pref:["514-012-017"],                                       type:"casa_condo", duo:false, fixedCamion:"514-012-017" },
+  { name:"Ali",        full:"Ali Messaoudi",            zone:"Côte-des-Neiges", pref:["514-016-26","514-021-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Christopher",full:"Christopher Sulyvan",      zone:"Plateau/Centre",  pref:["514-016-26","514-017-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Israel",     full:"Israel Mpoyi",             zone:"Hochelaga/Centre",pref:["514-017-26","514-021-25"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Rachid",     full:"Rachid Ait Idir",          zone:"Montréal/Centre", pref:["514-016-26","514-017-26","514-021-25"],                type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Pape",       full:"Pape Alioune Sy",          zone:"Côte-des-Neiges", pref:["514-021-25","514-016-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Kinsley",    full:"Kinsley Boileau",          zone:"RDP/NE",          pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Jennings",   full:"Jennings Mathurin",        zone:"Rive-Nord",       pref:["514-016-26","514-017-26","514-021-25"],               type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Alex",       full:"Alexandre Germain",        zone:"Laval",           pref:["514-014-25"],                                         type:"casa_condo", duo:false, fixedCamion:"514-014-25" },
+  { name:"Daniel",     full:"Daniel Mpeng",             zone:"Laval",           pref:["514-012-017","514-014-25","514-016-26"],               type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Thierno",    full:"Thierno I.S. Bah",         zone:"Côte-des-Neiges", pref:["514-019-26","514-020-26"],                            type:"duo",        duo:true,  fixedCamion:null },
+  { name:"Carson",     full:"Carson Alphonse",          zone:"RDP/NE",          pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Yanis",      full:"Yanis Ferdji",             zone:"Anjou/Est",       pref:["514-019-26","514-020-26"],                            type:"casa_condo", duo:false, fixedCamion:null },
+  { name:"Lerby",      full:"Lerby Jean-Calixte",       zone:"RDP/NE",          pref:["514-010-015"],                                        type:"casa_condo", duo:false, fixedCamion:"514-010-015" },
+  { name:"Edgard",     full:"Edgard Marvens Jeanith",  zone:"Laval",           pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3"], type:"murale",     duo:false, fixedCamion:null },
+  { name:"Gabriele",   full:"Gabriele Biunno",          zone:"RDP/NE",          pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3","Hyundai (1)"], type:"murale", duo:false, fixedCamion:null },
 ];
 
-// Set of fixed tech names — their camions are reserved exclusively for them
-const FIXED_TECHS = new Set(TECHS.filter(t => t.fixedCamion).map(t => t.name));
-const FIXED_CAMIONS = new Set(TECHS.filter(t => t.fixedCamion).map(t => t.fixedCamion));
+// ─── ZONE PROXIMITY ───────────────────────────────────────────────────────────
+// Zone groups: closer zones score higher proximity
+const ZONE_GROUPS = {
+  "Laval":           ["Laval","Rive-Nord","Repentigny"],
+  "Rive-Nord":       ["Laval","Rive-Nord","Repentigny","Anjou/Est"],
+  "RDP/NE":          ["RDP/NE","Anjou/Est","Hochelaga/Centre"],
+  "Anjou/Est":       ["Anjou/Est","RDP/NE","Hochelaga/Centre"],
+  "Plateau/Centre":  ["Plateau/Centre","Hochelaga/Centre","Montréal/Centre","Côte-des-Neiges"],
+  "Hochelaga/Centre":["Hochelaga/Centre","Plateau/Centre","Anjou/Est","Montréal/Centre"],
+  "Côte-des-Neiges": ["Côte-des-Neiges","Plateau/Centre","Montréal/Centre"],
+  "Montréal/Centre": ["Montréal/Centre","Plateau/Centre","Côte-des-Neiges","Hochelaga/Centre"],
+};
+
+const DEPOT_ZONES = {
+  "Laval":       ["Laval","Rive-Nord"],
+  "Rosemont/NE": ["RDP/NE","Anjou/Est","Hochelaga/Centre"],
+  "Mile-End":    ["Plateau/Centre","Côte-des-Neiges","Montréal/Centre","Anjou/Est"],
+};
+
+// City → zone mapping from CSV city field
+function cityToZone(city) {
+  if (!city) return "Montréal/Centre";
+  const c = city.toLowerCase();
+  if (c.includes("laval") || c.includes("mascouche") || c.includes("terrebonne") || c.includes("blainville") || c.includes("boisbriand") || c.includes("saint-eustache") || c.includes("mirabel")) return "Laval";
+  if (c.includes("repentigny") || c.includes("l'assomption") || c.includes("lassomption") || c.includes("saint-sulpice")) return "Rive-Nord";
+  if (c.includes("rivière-des-prairies") || c.includes("montréal-est") || c.includes("montreal-est") || c.includes("anjou")) return "RDP/NE";
+  if (c.includes("hochelaga") || c.includes("rosemont") || c.includes("plateau") || c.includes("maisonneuve")) return "Hochelaga/Centre";
+  if (c.includes("côte-des-neiges") || c.includes("cote-des-neiges") || c.includes("westmount") || c.includes("côte-saint-luc") || c.includes("ndg") || c.includes("notre-dame-de-grâce")) return "Côte-des-Neiges";
+  if (c.includes("vaudreuil") || c.includes("pincourt") || c.includes("île-perrot") || c.includes("notre-dame-de-l'île-perrot") || c.includes("les cèdres") || c.includes("saint-lazare") || c.includes("les cedres")) return "Laval";
+  if (c.includes("dollard") || c.includes("pierrefonds") || c.includes("roxboro") || c.includes("kirkland") || c.includes("beaconsfield") || c.includes("pointe-claire")) return "Côte-des-Neiges";
+  if (c.includes("longueuil") || c.includes("brossard") || c.includes("saint-lambert") || c.includes("boucherville") || c.includes("greenfield")) return "Hochelaga/Centre";
+  return "Montréal/Centre";
+}
+
+// Proximity score: 2=same, 1=adjacent, 0=far
+function zoneProximity(zoneA, zoneB) {
+  if (!zoneA || !zoneB) return 0;
+  if (zoneA === zoneB) return 2;
+  const groupA = ZONE_GROUPS[zoneA] || [zoneA];
+  if (groupA.includes(zoneB)) return 1;
+  return 0;
+}
+
+function depotZone(secteur) {
+  for (const [dz, zones] of Object.entries(DEPOT_ZONES)) {
+    if (secteur && secteur.includes(dz.split("/")[0])) return dz;
+  }
+  return "Mile-End";
+}
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-// importedData[isoDate][techName] = { firstAddress, firstTime, jobCount, status }
-// status: "active" | "oncall" | "off"
-let importedData = {};
-let overrides    = {};
-let validated    = {};
-let lastResults  = {};
-let activeDayISO = null;
+let importedData  = {}; // [isoDate][techName] = {firstAddress,firstCity,lastAddress,lastCity,firstTime,lastTime,jobCount,status}
+let overrides     = {};
+let validated     = {};
+let lastResults   = {};
+let recommendations = []; // global list
+let recDecisions  = {};   // recId -> "accepted"|"refused"
+let activeDayISO  = null;
 
 // ─── TIME PARSER ──────────────────────────────────────────────────────────────
 function parseStartMinutes(timesStr) {
-  // "8:00AM - 10:00AM" → 480
   if (!timesStr) return 9999;
-  const m = timesStr.trim().match(/^(\d+):(\d+)(AM|PM)/i);
+  const m = timesStr.trim().match(/^(\d+):(\d+)\s*(AM|PM)/i);
   if (!m) return 9999;
   let h = parseInt(m[1]), min = parseInt(m[2]);
-  const ampm = m[3].toUpperCase();
-  if (ampm === "PM" && h !== 12) h += 12;
-  if (ampm === "AM" && h === 12) h = 0;
+  const ap = m[3].toUpperCase();
+  if (ap === "PM" && h !== 12) h += 12;
+  if (ap === "AM" && h === 12) h = 0;
   return h * 60 + min;
 }
 
-// ─── TECH MATCHER ────────────────────────────────────────────────────────────
-function matchTech(rawAssigned) {
-  // rawAssigned: "B - Casa - Pape Alioune Sy" or "T - Ticket - Lerby Jean-Calixte"
-  let cleanName = rawAssigned.trim();
-  const m = rawAssigned.match(/[-–]\s*(?:Mural|Casa|Condo|Murale|Ticket|Supervision)\s*(?:[A-Za-z\s]+)?\s*[-–]\s*(.+)/i);
-  if (m) cleanName = m[1].trim();
+function formatTime(timesStr) {
+  if (!timesStr) return "";
+  return timesStr.split(" - ")[0];
+}
 
+// ─── TECH MATCHER ─────────────────────────────────────────────────────────────
+function matchTech(rawAssigned) {
+  let cleanName = rawAssigned.trim();
+  const m = rawAssigned.match(/[-–]\s*(?:Mural|Casa|Condo|Murale|Ticket|Supervision)(?:\s+\w+)?\s*[-–]\s*(.+)/i);
+  if (m) cleanName = m[1].trim();
   return TECHS.find(t => {
-    const fl = t.full.toLowerCase();
-    const cl = cleanName.toLowerCase();
-    // Exact or starts-with match on first name
-    return fl === cl
-      || fl.startsWith(cl.split(" ")[0])
-      || cl.startsWith(fl.split(" ")[0])
-      || fl.includes(cl.split(" ")[0])
-      || cl.includes(t.name.toLowerCase());
+    const fl = t.full.toLowerCase(), cl = cleanName.toLowerCase();
+    return fl === cl || fl.startsWith(cl.split(" ")[0]) || cl.startsWith(fl.split(" ")[0]) || fl.includes(cl.split(" ")[0]) || cl.includes(t.name.toLowerCase());
   });
 }
 
@@ -280,19 +350,17 @@ function splitCSVLine(line) {
     else if (ch === ',' && !inQ) { r.push(cur.trim()); cur = ""; }
     else cur += ch;
   }
-  r.push(cur.trim());
-  return r;
+  r.push(cur.trim()); return r;
 }
 
 function parseCSV() {
   const raw = document.getElementById("csv-input").value.trim();
   if (!raw) return;
   const lines = raw.split("\n").map(l => l.trim()).filter(l => l);
-  if (lines.length < 2) { document.getElementById("import-status").textContent = "Fichier vide."; return; }
+  if (lines.length < 2) { setImportStatus("Fichier vide."); return; }
 
   const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase().replace(/"/g, "").trim());
   const fi = kws => headers.findIndex(h => kws.some(k => h.includes(k)));
-
   const assignedIdx = fi(["assigned to"]);
   const streetIdx   = fi(["service street"]);
   const cityIdx     = fi(["service city"]);
@@ -301,12 +369,8 @@ function parseCSV() {
   const clientIdx   = fi(["client name"]);
   const titleIdx    = fi(["visit title"]);
 
-  if (assignedIdx === -1) {
-    document.getElementById("import-status").textContent = "Colonne 'Assigned to' non trouvée. Utiliser le Visits Report Jobber.";
-    return;
-  }
+  if (assignedIdx === -1) { setImportStatus("Colonne 'Assigned to' non trouvée. Utiliser le Visits Report."); return; }
 
-  // byDate[isoDate][techKey] = { jobs: [{addr, timeMin, timesStr}], status }
   const byDate = {};
 
   for (let i = 1; i < lines.length; i++) {
@@ -316,7 +380,6 @@ function parseCSV() {
     const rawAssigned = (cols[assignedIdx] || "").replace(/"/g, "").trim();
     if (!rawAssigned) continue;
 
-    // Parse date
     let isoDate = "unknown";
     if (dateIdx >= 0 && cols[dateIdx]) {
       const p = new Date(cols[dateIdx].replace(/"/g, "").trim());
@@ -331,48 +394,39 @@ function parseCSV() {
     const city     = cityIdx   >= 0 ? (cols[cityIdx]   || "").replace(/"/g, "").trim() : "";
     const addr     = [street, city].filter(Boolean).join(", ");
 
-    // Determine if this is Off or Sur appel
-    const isOff     = client.toLowerCase() === "off" || title.toLowerCase() === "off";
-    const isOnCall  = client.toLowerCase().includes("sur appel") || title.toLowerCase().includes("sur appel") || client.toLowerCase().includes("on call");
+    const isOff    = client.toLowerCase() === "off" || title.toLowerCase() === "off";
+    const isOnCall = client.toLowerCase().includes("sur appel") || title.toLowerCase().includes("sur appel") || client.toLowerCase().includes("on call");
 
-    // Handle multi-tech assigned (Jobber sometimes puts multiple)
-    // Split on " and " and commas between tech entries
     const assignedParts = rawAssigned.split(/,\s*(?=[A-Z])|(?:\s+and\s+)(?=[A-Z])/);
-
     for (const part of assignedParts) {
       const trimmed = part.trim();
       if (!trimmed) continue;
-      // Skip Quebec techs (Brice, Romuald) and supervision
-      if (/Brice|Romuald|Supervision|Loïc/i.test(trimmed)) continue;
-
+      if (/Brice|Romuald|Supervision|Loïc|Moustapha/i.test(trimmed)) continue;
       const tech = matchTech(trimmed);
-      const key  = tech ? tech.name : trimmed.split(" ").slice(-2).join(" ");
+      const key  = tech ? tech.name : trimmed.split(/\s+/).slice(-2).join(" ");
       if (!byDate[isoDate][key]) byDate[isoDate][key] = { jobs: [], status: "active", rawName: trimmed };
-
-      if (isOff) {
-        byDate[isoDate][key].status = "off";
-        continue;
-      }
-      if (isOnCall) {
-        if (byDate[isoDate][key].status !== "off") byDate[isoDate][key].status = "oncall";
-        continue;
-      }
-      byDate[isoDate][key].jobs.push({ addr, timeMin, timesStr });
+      if (isOff)    { byDate[isoDate][key].status = "off"; continue; }
+      if (isOnCall) { if (byDate[isoDate][key].status !== "off") byDate[isoDate][key].status = "oncall"; continue; }
+      byDate[isoDate][key].jobs.push({ addr, city, timeMin, timesStr });
     }
   }
 
-  // Build importedData — sort jobs by time, pick first
   importedData = {};
   for (const [iso, techMap] of Object.entries(byDate)) {
     importedData[iso] = {};
     for (const [key, data] of Object.entries(techMap)) {
-      if (data.status === "off") continue; // Off = excluded entirely
-      const sorted = data.jobs.sort((a, b) => a.timeMin - b.timeMin);
+      if (data.status === "off") continue;
+      const sorted = data.jobs.filter(j => j.timeMin < 9999).sort((a, b) => a.timeMin - b.timeMin);
+      const allJobs = sorted.length > 0 ? sorted : data.jobs;
       importedData[iso][key] = {
-        firstAddress: sorted[0]?.addr || "",
-        firstTime:    sorted[0]?.timesStr || "",
-        jobCount:     sorted.length,
-        status:       data.status, // "active" or "oncall"
+        firstAddress: allJobs[0]?.addr  || "",
+        firstCity:    allJobs[0]?.city  || "",
+        firstTime:    allJobs[0]?.timesStr || "",
+        lastAddress:  allJobs[allJobs.length-1]?.addr  || "",
+        lastCity:     allJobs[allJobs.length-1]?.city  || "",
+        lastTime:     allJobs[allJobs.length-1]?.timesStr || "",
+        jobCount:     allJobs.length,
+        status:       data.status,
         rawName:      data.rawName,
       };
     }
@@ -380,119 +434,228 @@ function parseCSV() {
 
   const nD = Object.keys(importedData).length;
   const nT = Object.values(importedData).reduce((s, d) => s + Object.keys(d).length, 0);
-  document.getElementById("import-status").textContent = `${nD} journée${nD > 1 ? "s" : ""} · ${nT} techniciens importés (Off exclus).`;
+  setImportStatus(`${nD} journée${nD>1?"s":""} · ${nT} techniciens importés.`);
   switchTab("planning");
 }
 
-function clearImport() {
-  importedData = {};
-  document.getElementById("csv-input").value = "";
-  document.getElementById("import-status").textContent = "Données effacées.";
-}
-
-// ─── SCORING ─────────────────────────────────────────────────────────────────
+// ─── SCORING ──────────────────────────────────────────────────────────────────
 function scoreCamion(tech, camion) {
-  // Fixed camions are reserved — never scored for other techs
   if (camion.fixedTech && camion.fixedTech !== tech.name) return -999;
   if (tech.type === "murale" && camion.type !== "murale") return -999;
   if (tech.type !== "murale" && camion.type === "murale") return -999;
   if (tech.duo && !camion.duo) return -999;
   let s = 100;
   const pi = tech.pref.indexOf(camion.id);
-  if (pi === 0) s += 50;
-  else if (pi === 1) s += 30;
-  else if (pi >= 2) s += 15;
+  if (pi === 0) s += 50; else if (pi === 1) s += 30; else if (pi >= 2) s += 15;
   if (camion.duo && !tech.duo) s -= 15;
   return s;
 }
 
 // ─── ASSIGNMENT ENGINE ────────────────────────────────────────────────────────
 function computeDay(isoDate) {
-  const dayJobs     = importedData[isoDate] || {};
-  const dayOverrides = overrides[isoDate]   || {};
+  const dayJobs      = importedData[isoDate] || {};
+  const dayOverrides = overrides[isoDate]    || {};
+  const activeTechs  = TECHS.filter(t => dayJobs[t.name]);
+  const usage        = {};
+  const assignments  = {};
 
-  // Active techs = those in CSV with status "active" or "oncall"
-  const activeTechs = TECHS.filter(t => dayJobs[t.name]);
-
-  const usage       = {};
-  const assignments = {};
-
-  // First pass: assign fixed camions
+  // Fixed camions first
   for (const tech of activeTechs) {
-    const data   = dayJobs[tech.name];
-    const status = data.status; // "active" | "oncall"
-
-    if (status === "oncall") {
-      assignments[tech.name] = { camion: null, status: "oncall", oncall: true };
-      continue;
-    }
-
-    // Override takes priority
+    const data = dayJobs[tech.name];
+    if (data.status === "oncall") { assignments[tech.name] = { camion:null, status:"oncall", oncall:true }; continue; }
     if (dayOverrides[tech.name]) {
       const cid = dayOverrides[tech.name];
-      usage[cid] = (usage[cid] || 0) + 1;
+      usage[cid] = (usage[cid]||0) + 1;
       const c = FLEET.find(f => f.id === cid);
-      assignments[tech.name] = { camion: cid, status: "active", override: true, depot: c?.depot, fixed: false };
-      continue;
+      assignments[tech.name] = { camion:cid, status:"active", override:true, depot:c?.depot }; continue;
     }
-
-    // Fixed camion
     if (tech.fixedCamion) {
-      usage[tech.fixedCamion] = (usage[tech.fixedCamion] || 0) + 1;
+      usage[tech.fixedCamion] = (usage[tech.fixedCamion]||0) + 1;
       const c = FLEET.find(f => f.id === tech.fixedCamion);
-      assignments[tech.name] = { camion: tech.fixedCamion, status: "active", fixed: true, depot: c?.depot };
-      continue;
+      assignments[tech.name] = { camion:tech.fixedCamion, status:"active", fixed:true, depot:c?.depot }; continue;
     }
   }
-
-  // Second pass: score-based assignment for remaining active techs
+  // Score-based
   for (const tech of activeTechs) {
-    if (assignments[tech.name]) continue; // already handled
-    const data = dayJobs[tech.name];
-    if (data.status === "oncall") continue;
-
-    const eligible = FLEET.filter(c => {
-      if (c.fixedTech) return false; // reserved camion — skip
-      return (usage[c.id] || 0) < c.cap;
-    });
-
-    const ranked = eligible
-      .map(c => ({ c, s: scoreCamion(tech, c) }))
-      .filter(x => x.s > 0)
-      .sort((a, b) => b.s - a.s);
-
-    if (ranked.length === 0) {
-      assignments[tech.name] = { camion: null, status: "active", conflict: true };
-    } else {
+    if (assignments[tech.name]) continue;
+    const eligible = FLEET.filter(c => !c.fixedTech && (usage[c.id]||0) < c.cap);
+    const ranked = eligible.map(c => ({ c, s:scoreCamion(tech,c) })).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+    if (ranked.length === 0) { assignments[tech.name] = { camion:null, status:"active", conflict:true }; }
+    else {
       const best = ranked[0].c;
-      usage[best.id] = (usage[best.id] || 0) + 1;
-      assignments[tech.name] = { camion: best.id, status: "active", depot: best.depot, secteur: best.secteur };
+      usage[best.id] = (usage[best.id]||0) + 1;
+      assignments[tech.name] = { camion:best.id, status:"active", depot:best.depot, secteur:best.secteur };
     }
   }
-
   return { assignments, activeTechs };
 }
 
-// ─── RUN ALL DAYS ─────────────────────────────────────────────────────────────
-function runAllDays() {
+// ─── RECOMMENDATION ENGINE ────────────────────────────────────────────────────
+function generateRecommendations() {
+  const recs = [];
   const dates = Object.keys(importedData).sort();
-  if (dates.length === 0) { setStatus("Aucune donnée importée."); return; }
-  lastResults = {};
-  for (const d of dates) lastResults[d] = computeDay(d);
-  renderAllDays(dates);
-  updateGlobalMetrics(dates);
-  document.getElementById("planning-empty").style.display  = "none";
-  document.getElementById("global-metrics").style.display  = "block";
-  setStatus("Assignations calculées pour " + dates.length + " journée" + (dates.length > 1 ? "s" : "") + ".");
+
+  for (let di = 0; di < dates.length; di++) {
+    const iso     = dates[di];
+    const isoNext = dates[di + 1];
+    const res     = lastResults[iso];
+    if (!res) continue;
+
+    const dayJobs = importedData[iso] || {};
+    const { assignments, activeTechs } = res;
+
+    for (const tech of activeTechs) {
+      const asgn = assignments[tech.name];
+      const job  = dayJobs[tech.name];
+      if (!asgn || asgn.oncall || asgn.conflict || !job) continue;
+
+      const camion   = FLEET.find(f => f.id === asgn.camion);
+      if (!camion) continue;
+
+      const lastJobZone  = cityToZone(job.lastCity);
+      const depotZoneVal = depotZone(camion.secteur);
+      const techZone     = tech.zone;
+
+      // ── TYPE 1 — Garder camion à domicile ────────────────────────────────
+      // If tech works tomorrow AND first job tomorrow is closer to tech's home than depot
+      if (isoNext) {
+        const nextDayJobs = importedData[isoNext] || {};
+        const nextJob = nextDayJobs[tech.name];
+        if (nextJob && nextJob.status !== "oncall") {
+          const nextFirstZone = cityToZone(nextJob.firstCity);
+          const proxHome  = zoneProximity(techZone, nextFirstZone);
+          const proxDepot = zoneProximity(depotZoneVal, nextFirstZone);
+          if (proxHome >= proxDepot && proxHome > 0) {
+            // Also check last job today is near tech home
+            const lastJobProxHome = zoneProximity(techZone, lastJobZone);
+            if (lastJobProxHome >= 1) {
+              recs.push({
+                id: `t1-${iso}-${tech.name}`,
+                type: 1,
+                date: iso,
+                dateNext: isoNext,
+                techName: tech.name,
+                techFull: tech.full,
+                camionId: asgn.camion,
+                title: `Type 1 — Garder le camion à domicile`,
+                body: `<strong>${tech.full}</strong> finit sa journée du ${fmtDate(iso)} dans le secteur <strong>${lastJobZone}</strong> (proche de son domicile en ${techZone}). Sa première job le ${fmtDate(isoNext)} est à <strong>${nextJob.firstCity || nextFirstZone}</strong> — plus proche de son domicile que du dépôt <strong>${camion.depot.split(",")[0]}</strong>.<br><br>Recommandation : demander à ${tech.full} de garder le camion <strong>${asgn.camion}</strong> chez lui ce soir pour partir directement le lendemain matin.`,
+              });
+            }
+          }
+        }
+      }
+
+      // ── TYPE 3 — Camion mieux placé ───────────────────────────────────────
+      if (!asgn.fixed && !asgn.override) {
+        const firstJobZone = cityToZone(job.firstCity);
+        const currentProx  = zoneProximity(depotZoneVal, firstJobZone);
+        // Find any free camion with better depot proximity
+        const usedCamions = new Set(Object.values(assignments).map(a=>a.camion).filter(Boolean));
+        for (const altCamion of FLEET) {
+          if (altCamion.id === asgn.camion) continue;
+          if (altCamion.fixedTech && altCamion.fixedTech !== tech.name) continue;
+          if (usedCamions.has(altCamion.id)) continue;
+          if (altCamion.type !== camion.type) continue;
+          const altDepotZone = depotZone(altCamion.secteur);
+          const altProx = zoneProximity(altDepotZone, firstJobZone);
+          if (altProx > currentProx) {
+            recs.push({
+              id: `t3-${iso}-${tech.name}-${altCamion.id}`,
+              type: 3,
+              date: iso,
+              techName: tech.name,
+              techFull: tech.full,
+              camionId: asgn.camion,
+              altCamionId: altCamion.id,
+              title: `Type 3 — Camion mieux placé disponible`,
+              body: `<strong>${tech.full}</strong> est assigné au camion <strong>${asgn.camion}</strong> (dépôt ${camion.depot.split(",")[0]}) pour le ${fmtDate(iso)}. Sa première job est à <strong>${job.firstCity || firstJobZone}</strong>.<br><br>Le camion <strong>${altCamion.id}</strong> (dépôt ${altCamion.depot.split(",")[0]}) est libre et son dépôt est plus proche de cette première job.<br><br>Recommandation : assigner <strong>${altCamion.id}</strong> à la place.`,
+            });
+            break; // one suggestion per tech
+          }
+        }
+      }
+    }
+
+    // ── TYPE 2 — Échange de jobs entre techs ──────────────────────────────
+    if (isoNext) {
+      const nextDayJobs = importedData[isoNext] || {};
+      const nextRes     = lastResults[isoNext];
+      if (!nextRes) continue;
+
+      for (const techA of activeTechs) {
+        const asgnA = assignments[techA.name];
+        const jobA  = dayJobs[techA.name];
+        if (!asgnA || asgnA.oncall || asgnA.conflict || !jobA) continue;
+
+        // For each tech B active tomorrow
+        for (const [techBName, jobB] of Object.entries(nextDayJobs)) {
+          if (jobB.status === "oncall" || !jobB.firstCity) continue;
+          const techB = TECHS.find(t => t.name === techBName);
+          if (!techB || techBName === techA.name) continue;
+
+          const jobBFirstZone = cityToZone(jobB.firstCity);
+
+          // Check: is A's home closer to B's first job than B's home?
+          const proxAtoB = zoneProximity(techA.zone, jobBFirstZone);
+          const proxBtoB = zoneProximity(techB.zone, jobBFirstZone);
+
+          if (proxAtoB > proxBtoB && proxAtoB >= 1) {
+            // Also: is A's last job today near A's home (so keeping cam at home makes sense)?
+            const lastJobZoneA = cityToZone(jobA.lastCity);
+            const proxALastToHome = zoneProximity(techA.zone, lastJobZoneA);
+            if (proxALastToHome >= 1 && asgnA.camion) {
+              recs.push({
+                id: `t2-${iso}-${techA.name}-${isoNext}-${techBName}`,
+                type: 2,
+                date: iso,
+                dateNext: isoNext,
+                techName: techA.name,
+                techFull: techA.full,
+                techBName,
+                techBFull: techB.full,
+                camionId: asgnA.camion,
+                jobBCity: jobB.firstCity,
+                title: `Type 2 — Échange de job recommandé`,
+                body: `La première job de <strong>${techB.full}</strong> le ${fmtDate(isoNext)} est à <strong>${jobB.firstCity}</strong> — zone ${jobBFirstZone}.<br><br><strong>${techA.full}</strong> habite en ${techA.zone}, plus proche de cette job que ${techB.full} (${techB.zone}). De plus, ${techA.full} finit sa journée du ${fmtDate(iso)} près de son domicile.<br><br>Recommandation : transférer cette job du ${fmtDate(isoNext)} de <strong>${techB.full}</strong> à <strong>${techA.full}</strong>, et demander à <strong>${techA.full}</strong> de garder le camion <strong>${asgnA.camion}</strong> chez lui ce soir.`,
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Deduplicate — keep highest impact per tech per day
+  const seen = new Set();
+  recommendations = recs.filter(r => {
+    const k = `${r.type}-${r.date}-${r.techName}`;
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
+  });
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────────────────
+// ─── RUN ALL ──────────────────────────────────────────────────────────────────
+function runAllDays() {
+  const dates = Object.keys(importedData).sort();
+  if (!dates.length) { setStatus("Aucune donnée importée."); return; }
+  lastResults = {};
+  recDecisions = {};
+  for (const d of dates) lastResults[d] = computeDay(d);
+  generateRecommendations();
+  renderAllDays(dates);
+  renderRecommendations();
+  updateGlobalMetrics(dates);
+  document.getElementById("planning-empty").style.display = "none";
+  document.getElementById("global-metrics").style.display = "block";
+  setStatus(`Assignations calculées · ${recommendations.length} recommandation${recommendations.length!==1?"s":""} générée${recommendations.length!==1?"s":""}.`);
+}
+
+// ─── RENDER PLANNING ─────────────────────────────────────────────────────────
 function renderAllDays(dates) {
   const tabBar = document.getElementById("day-tab-bar");
   const panels = document.getElementById("day-panels");
   tabBar.style.display = "flex";
-  tabBar.innerHTML = "";
-  panels.innerHTML  = "";
+  tabBar.innerHTML = ""; panels.innerHTML = "";
   const daysFr   = ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
   const monthsFr = ["jan","fév","mar","avr","mai","juin","juil","août","sep","oct","nov","déc"];
   if (!activeDayISO || !dates.includes(activeDayISO)) activeDayISO = dates[0];
@@ -502,14 +665,15 @@ function renderAllDays(dates) {
     const lbl = `${daysFr[d.getDay()]} ${d.getDate()} ${monthsFr[d.getMonth()]}`;
     const res = lastResults[iso];
     const hasConflict = res && Object.values(res.assignments).some(a => a.conflict);
+    const hasRec = recommendations.some(r => r.date === iso || r.dateNext === iso);
     const tab = document.createElement("div");
-    tab.className = "day-tab" + (iso === activeDayISO ? " active" : "") + (hasConflict ? " has-conflict" : "");
+    tab.className = "day-tab" + (iso===activeDayISO?" active":"") + (hasConflict?" has-conflict":"") + (hasRec&&!hasConflict?" has-rec":"");
     tab.textContent = lbl;
     tab.onclick = () => switchDay(iso, dates);
     tabBar.appendChild(tab);
     const panel = document.createElement("div");
-    panel.id        = "panel-" + iso;
-    panel.className = "day-panel" + (iso === activeDayISO ? " active" : "");
+    panel.id = "panel-" + iso;
+    panel.className = "day-panel" + (iso===activeDayISO?" active":"");
     panel.innerHTML = buildDayHTML(iso, res);
     panels.appendChild(panel);
   }
@@ -520,72 +684,74 @@ function buildDayHTML(iso, res) {
   const { assignments, activeTechs } = res;
   const dayJobs = importedData[iso] || {};
   const dayVal  = validated[iso]    || {};
-  if (activeTechs.length === 0) return '<div class="empty-state">Aucun technicien actif ce jour.</div>';
+  if (!activeTechs.length) return '<div class="empty-state">Aucun technicien actif ce jour.</div>';
 
   const conflicts = Object.values(assignments).filter(a => a.conflict);
-  let html = "";
-  if (conflicts.length > 0)
-    html += `<div class="error-box">Aucun camion disponible pour ${conflicts.length} technicien(s) — assigner via override.</div>`;
+  const dayRecs   = recommendations.filter(r => (r.date === iso || r.dateNext === iso) && recDecisions[r.id] !== "refused");
 
-  // Sort: active first, oncall at bottom
-  const sorted = [...activeTechs].sort((a, b) => {
-    const sa = assignments[a.name]?.oncall ? 1 : 0;
-    const sb = assignments[b.name]?.oncall ? 1 : 0;
-    return sa - sb;
-  });
+  let html = "";
+  if (conflicts.length)
+    html += `<div class="error-box">Aucun camion disponible pour ${conflicts.length} technicien(s) — assigner via override.</div>`;
+  if (dayRecs.length)
+    html += `<div style="background:var(--rec-bg);border:0.5px solid var(--rec-border);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--rec-text);margin-bottom:10px;">
+      💡 ${dayRecs.length} recommandation${dayRecs.length>1?"s":""} concernent cette journée — voir l'onglet <strong>Recommandations</strong>.
+    </div>`;
+
+  const sorted = [...activeTechs].sort((a,b) => (assignments[a.name]?.oncall?1:0) - (assignments[b.name]?.oncall?1:0));
 
   for (const tech of sorted) {
-    const asgn   = assignments[tech.name];
-    if (!asgn) continue;
-    const job    = dayJobs[tech.name];
-    const isVal  = dayVal[tech.name];
+    const asgn  = assignments[tech.name]; if (!asgn) continue;
+    const job   = dayJobs[tech.name];
+    const isVal = dayVal[tech.name];
     const isFixed   = asgn.fixed && !asgn.override;
     const isOnCall  = asgn.oncall;
-    const isConflict = asgn.conflict;
-    const avatarBg    = tech.type === "murale" ? "var(--green-bg)" : tech.duo ? "var(--purple-bg)" : "var(--blue-bg)";
-    const avatarColor = tech.type === "murale" ? "var(--green-text)" : tech.duo ? "var(--purple-text)" : "var(--blue-text)";
+    const isConflict= asgn.conflict;
+    const avatarBg  = tech.type==="murale"?"var(--green-bg)":tech.duo?"var(--purple-bg)":"var(--blue-bg)";
+    const avatarCol = tech.type==="murale"?"var(--green-text)":tech.duo?"var(--purple-text)":"var(--blue-text)";
+    const techRecs  = recommendations.filter(r => r.techName===tech.name && (r.date===iso||r.dateNext===iso) && recDecisions[r.id]!=="refused");
 
-    html += `<div class="tech-card ${isConflict ? "conflict" : ""} ${isVal ? "validated" : ""} ${isOnCall ? "oncall" : ""}">
+    html += `<div class="tech-card ${isConflict?"conflict":""} ${isVal?"validated":""} ${isOnCall?"oncall":""}">
       <div class="tech-header">
         <div class="tech-info">
-          <div class="avatar" style="background:${avatarBg};color:${avatarColor};">${tech.name.substring(0,2).toUpperCase()}</div>
+          <div class="avatar" style="background:${avatarBg};color:${avatarCol};">${tech.name.substring(0,2).toUpperCase()}</div>
           <div><div class="tech-name">${tech.full}</div><div class="tech-zone">${tech.zone}</div></div>
         </div>
         <div class="tech-badges">
-          ${asgn.status === "Duo" ? '<span class="badge b-duo">DUO</span>' : ""}
-          ${isOnCall  ? '<span class="badge b-oncall">Sur appel</span>' : ""}
-          ${isFixed   ? '<span class="badge b-fixed">Camion fixe</span>' : ""}
-          ${asgn.override ? '<span class="badge b-override">Override</span>' : ""}
-          ${isConflict ? '<span class="badge b-conflict">Conflit</span>' : ""}
-          ${isVal     ? '<span class="badge" style="background:var(--green-bg);color:var(--green-text);">✓ Validé</span>' : ""}
+          ${asgn.status==="Duo"?'<span class="badge b-duo">DUO</span>':""}
+          ${isOnCall?'<span class="badge b-oncall">Sur appel</span>':""}
+          ${isFixed?'<span class="badge b-fixed">Camion fixe</span>':""}
+          ${asgn.override?'<span class="badge b-override">Override</span>':""}
+          ${isConflict?'<span class="badge b-conflict">Conflit</span>':""}
+          ${techRecs.length?`<span class="badge" style="background:var(--rec-bg);color:var(--rec-text);border:0.5px solid var(--rec-border);">💡 ${techRecs.length} rec.</span>`:""}
+          ${isVal?'<span class="badge" style="background:var(--green-bg);color:var(--green-text);">✓ Validé</span>':""}
         </div>
       </div>
       <div class="assignment-line">
-        ${isOnCall
-          ? '<span style="font-size:12px;color:var(--amber-text);">Sur appel — aucun camion assigné</span>'
-          : isConflict
-            ? '<span style="font-size:12px;color:var(--red-text);">Aucun camion éligible — assigner via override</span>'
-            : `<span class="camion-pill ${isFixed ? "fixed" : ""}">${asgn.camion}</span><span class="depot-text">${asgn.depot || ""}</span>`
-        }
+        ${isOnCall?'<span style="font-size:12px;color:var(--amber-text);">Sur appel — aucun camion assigné</span>'
+          :isConflict?'<span style="font-size:12px;color:var(--red-text);">Aucun camion éligible — assigner via override</span>'
+          :`<span class="camion-pill ${isFixed?"fixed":""}">${asgn.camion}</span><span class="depot-text">${asgn.depot||""}</span>`}
       </div>
-      ${job && job.firstAddress ? `<div class="job-line">
-        <span class="job-label">1ère job :</span>
-        <span class="job-addr">${job.firstAddress}</span>
-        ${job.firstTime ? `<span class="job-time">${job.firstTime.split(" - ")[0]}</span>` : ""}
-        ${job.jobCount > 1 ? `<span class="badge" style="background:var(--gray-bg);color:var(--gray-text);">${job.jobCount} jobs</span>` : ""}
-      </div>` : ""}
-      ${!isOnCall ? `<div class="override-row">
+      ${job&&job.firstAddress?`<div class="job-line">
+        <span class="job-label">1ère job :</span><span class="job-addr">${job.firstAddress}</span>
+        ${job.firstTime?`<span class="job-time">${formatTime(job.firstTime)}</span>`:""}
+        ${job.jobCount>1?`<span class="badge" style="background:var(--gray-bg);color:var(--gray-text);">${job.jobCount} jobs</span>`:""}
+      </div>`:""}
+      ${job&&job.lastAddress&&job.jobCount>1?`<div class="job-line">
+        <span class="job-label">Dernière job :</span><span class="job-addr">${job.lastAddress}</span>
+        ${job.lastTime?`<span class="job-time">${formatTime(job.lastTime)}</span>`:""}
+      </div>`:""}
+      ${!isOnCall?`<div class="override-row">
         <span class="override-label">Override :</span>
         <select class="override-select" onchange="applyOverride('${iso}','${tech.name}',this.value)">
           <option value="">— Décision moteur —</option>
-          ${FLEET.map(c => `<option value="${c.id}" ${(overrides[iso]||{})[tech.name] === c.id ? "selected" : ""}>${c.id} (${c.secteur})</option>`).join("")}
+          ${FLEET.map(c=>`<option value="${c.id}" ${(overrides[iso]||{})[tech.name]===c.id?"selected":""}>${c.id} (${c.secteur})</option>`).join("")}
         </select>
-        ${(overrides[iso]||{})[tech.name] ? `<button class="danger-sm" onclick="clearOverride('${iso}','${tech.name}')">Retirer</button>` : ""}
-      </div>` : ""}
+        ${(overrides[iso]||{})[tech.name]?`<button class="danger-sm" onclick="clearOverride('${iso}','${tech.name}')">Retirer</button>`:""}
+      </div>`:""}
       <div class="validate-row">
         <label class="validate-check">
-          <input type="checkbox" ${isVal ? "checked" : ""} onchange="toggleValidate('${iso}','${tech.name}',this.checked)" />
-          ${isOnCall ? "Sur appel notifié" : "Validé VP — camion communiqué au technicien"}
+          <input type="checkbox" ${isVal?"checked":""} onchange="toggleValidate('${iso}','${tech.name}',this.checked)" />
+          ${isOnCall?"Sur appel notifié":"Validé VP — camion communiqué au technicien"}
         </label>
       </div>
     </div>`;
@@ -593,38 +759,105 @@ function buildDayHTML(iso, res) {
   return html;
 }
 
+// ─── RENDER RECOMMENDATIONS ──────────────────────────────────────────────────
+function renderRecommendations() {
+  const el = document.getElementById("recs-content");
+  const badge = document.getElementById("rec-badge");
+
+  const active = recommendations.filter(r => recDecisions[r.id] !== "refused");
+  const pending = active.filter(r => !recDecisions[r.id]);
+  badge.textContent = pending.length;
+  badge.style.display = pending.length > 0 ? "inline" : "none";
+
+  if (!recommendations.length) {
+    el.innerHTML = '<div class="empty-state">Aucune recommandation générée. Importer plusieurs journées consécutives pour les recommandations inter-journées.</div>';
+    return;
+  }
+
+  const typeLabels = { 1:"🏠 Type 1 — Stationnement à domicile", 2:"🔄 Type 2 — Échange de jobs", 3:"🚚 Type 3 — Camion mieux placé" };
+  const groups = { 1:[], 2:[], 3:[] };
+  for (const r of recommendations) groups[r.type].push(r);
+
+  let html = "";
+  for (const [type, list] of Object.entries(groups)) {
+    if (!list.length) continue;
+    const pendingCount = list.filter(r => !recDecisions[r.id]).length;
+    html += `<div class="rec-section">
+      <div class="rec-section-title">${typeLabels[type]} <span style="font-size:11px;color:var(--text3);font-weight:400;">${list.length} recommandation${list.length>1?"s":""} · ${pendingCount} en attente</span></div>`;
+    for (const r of list) {
+      const decision = recDecisions[r.id];
+      const typeClass = `type${type}`;
+      html += `<div class="rec-card ${typeClass} ${decision==="accepted"?"accepted":""} ${decision==="refused"?"refused":""}" id="rec-${r.id.replace(/[^a-z0-9]/gi,'_')}">
+        <div class="rec-title ${typeClass}">${r.title}</div>
+        <div class="rec-body">${r.body}</div>
+        <div class="rec-actions">
+          ${decision==="accepted"
+            ? `<span class="rec-accepted-label">✓ Accepté</span><button class="btn-refuse" onclick="decideRec('${r.id}','refused')">Annuler</button>`
+            : `<button class="btn-accept" onclick="decideRec('${r.id}','accepted')">✓ Accepter</button>
+               <button class="btn-refuse" onclick="decideRec('${r.id}','refused')">Ignorer</button>`
+          }
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+  el.innerHTML = html;
+}
+
+function decideRec(recId, decision) {
+  recDecisions[recId] = decision;
+  renderRecommendations();
+  // Refresh day panels to update rec badges
+  const dates = Object.keys(lastResults).sort();
+  renderAllDays(dates);
+  updateGlobalMetrics(dates);
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmtDate(iso) {
+  const d = new Date(iso + "T00:00:00");
+  const days = ["dim","lun","mar","mer","jeu","ven","sam"];
+  const months = ["jan","fév","mar","avr","mai","juin","juil","août","sep","oct","nov","déc"];
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+}
+
 function switchDay(iso, dates) {
   activeDayISO = iso;
   dates.forEach((d, i) => {
-    const p = document.getElementById("panel-" + d);
-    if (p) p.className = "day-panel" + (d === iso ? " active" : "");
+    const p = document.getElementById("panel-"+d);
+    if (p) p.className = "day-panel"+(d===iso?" active":"");
     const tabs = document.querySelectorAll(".day-tab");
-    if (tabs[i]) tabs[i].classList.toggle("active", d === iso);
+    if (tabs[i]) tabs[i].classList.toggle("active", d===iso);
   });
 }
 
 function updateGlobalMetrics(dates) {
-  let a = 0, b = 0, oc = 0, c = 0;
+  let a=0, b=0, oc=0, c=0;
   for (const d of dates) {
     const r = lastResults[d]; if (!r) continue;
     a  += r.activeTechs.length;
-    b  += Object.values(r.assignments).filter(x => x.camion && !x.conflict && !x.oncall).length;
-    oc += Object.values(r.assignments).filter(x => x.oncall).length;
-    c  += Object.values(r.assignments).filter(x => x.conflict).length;
+    b  += Object.values(r.assignments).filter(x=>x.camion&&!x.conflict&&!x.oncall).length;
+    oc += Object.values(r.assignments).filter(x=>x.oncall).length;
+    c  += Object.values(r.assignments).filter(x=>x.conflict).length;
   }
   document.getElementById("m-days").textContent     = dates.length;
   document.getElementById("m-active").textContent   = a;
   document.getElementById("m-assigned").textContent = b;
   document.getElementById("m-oncall").textContent   = oc;
-  document.getElementById("m-conflicts").textContent = c;
+  document.getElementById("m-conflicts").textContent= c;
+  const pending = recommendations.filter(r => !recDecisions[r.id]).length;
+  document.getElementById("m-recs").textContent     = pending;
 }
 
 function applyOverride(iso, techName, camionId) {
   if (!overrides[iso]) overrides[iso] = {};
   if (!camionId) delete overrides[iso][techName]; else overrides[iso][techName] = camionId;
   lastResults[iso] = computeDay(iso);
-  renderAllDays(Object.keys(lastResults).sort());
-  updateGlobalMetrics(Object.keys(lastResults).sort());
+  generateRecommendations();
+  const dates = Object.keys(lastResults).sort();
+  renderAllDays(dates);
+  renderRecommendations();
+  updateGlobalMetrics(dates);
 }
 
 function clearOverride(iso, techName) { applyOverride(iso, techName, ""); }
@@ -633,40 +866,42 @@ function toggleValidate(iso, techName, checked) {
   if (!validated[iso]) validated[iso] = {};
   validated[iso][techName] = checked;
   updateGlobalMetrics(Object.keys(lastResults).sort());
-  const p = document.getElementById("panel-" + iso);
+  const p = document.getElementById("panel-"+iso);
   if (p) p.innerHTML = buildDayHTML(iso, lastResults[iso]);
 }
 
-// ─── EXPORT ───────────────────────────────────────────────────────────────────
 function exportAllCSV() {
   if (!Object.keys(lastResults).length) { setStatus("Calculer d'abord."); return; }
-  let csv = "Date,Technicien,Statut,Camion assigné,Dépôt,Camion fixe,Override,Validé VP,1ère adresse,Heure début,Nb jobs\n";
+  let csv = "Date,Technicien,Statut,Camion,Dépôt,Camion fixe,Override,Validé VP,1ère adresse,Heure début,Dernière adresse,Heure fin,Nb jobs\n";
   for (const [iso, res] of Object.entries(lastResults).sort()) {
-    const dJ = importedData[iso] || {}, dV = validated[iso] || {};
+    const dJ = importedData[iso]||{}, dV = validated[iso]||{};
     for (const [n, asgn] of Object.entries(res.assignments)) {
-      const t = TECHS.find(x => x.name === n), j = dJ[n];
-      const statut = asgn.oncall ? "Sur appel" : asgn.conflict ? "Conflit" : "Actif";
-      csv += `"${iso}","${t?.full||n}","${statut}","${asgn.camion||''}","${asgn.depot||''}","${asgn.fixed?'Oui':'Non'}","${asgn.override?'Oui':'Non'}","${dV[n]?'Oui':'Non'}","${j?.firstAddress||''}","${j?.firstTime||''}","${j?.jobCount||''}"\n`;
+      const t=TECHS.find(x=>x.name===n), j=dJ[n];
+      const st = asgn.oncall?"Sur appel":asgn.conflict?"Conflit":"Actif";
+      csv += `"${iso}","${t?.full||n}","${st}","${asgn.camion||''}","${asgn.depot||''}","${asgn.fixed?'Oui':'Non'}","${asgn.override?'Oui':'Non'}","${dV[n]?'Oui':'Non'}","${j?.firstAddress||''}","${j?.firstTime||''}","${j?.lastAddress||''}","${j?.lastTime||''}","${j?.jobCount||''}"\n`;
     }
   }
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+  a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));
   a.download = `assignation_${Object.keys(lastResults).sort()[0]}.csv`;
-  a.click();
-  setStatus("Export téléchargé.");
+  a.click(); setStatus("Export téléchargé.");
 }
+
+function clearImport() { importedData={}; document.getElementById("csv-input").value=""; setImportStatus("Données effacées."); }
+function setStatus(msg) { document.getElementById("status-msg").textContent = msg; }
+function setImportStatus(msg) { document.getElementById("import-status").textContent = msg; }
 
 // ─── FLEET & RULES ────────────────────────────────────────────────────────────
 function renderFleet() {
-  const tC = { "Laval":"tag-laval", "Rosemont/NE":"tag-iberville", "Mile-End":"tag-stlaurent" };
-  document.getElementById("fleet-grid").innerHTML = FLEET.map(c => `
+  const tC={"Laval":"tag-laval","Rosemont/NE":"tag-iberville","Mile-End":"tag-stlaurent"};
+  document.getElementById("fleet-grid").innerHTML = FLEET.map(c=>`
     <div class="fleet-card">
-      <div class="fleet-name">${c.id}${c.fixedTech ? ` <span style="font-size:10px;color:#27500a;">→ ${c.fixedTech}</span>` : ""}</div>
+      <div class="fleet-name">${c.id}${c.fixedTech?` <span style="font-size:10px;color:#27500a;">→ ${c.fixedTech}</span>`:""}</div>
       <div class="fleet-depot">${c.depot}</div>
       <div class="fleet-tags">
-        <span class="tag ${c.fixedTech ? "tag-fixed" : tC[c.secteur]||""}">${c.secteur}</span>
-        ${c.fixedTech ? '<span class="tag tag-fixed">Camion fixe</span>' : ""}
-        ${c.duo ? '<span class="tag tag-duo">DUO · 2 techs</span>' : '<span class="tag">1 tech</span>'}
+        <span class="tag ${c.fixedTech?"tag-fixed":tC[c.secteur]||""}">${c.secteur}</span>
+        ${c.fixedTech?'<span class="tag tag-fixed">Camion fixe</span>':""}
+        ${c.duo?'<span class="tag tag-duo">DUO · 2 techs</span>':'<span class="tag">1 tech</span>'}
         <span class="tag">${c.type}</span>
       </div>
     </div>`).join("");
@@ -674,50 +909,51 @@ function renderFleet() {
 
 function renderRules() {
   const rules = [
-    ["Source de vérité — Visits Report", "Seuls les techniciens présents dans le CSV Jobber (Visits Report) sont considérés actifs. Aucune liste statique n'est utilisée."],
-    ["Statut Off", "Client name ou Visit title = 'Off' → technicien exclu de la journée, pas de camion."],
-    ["Statut Sur appel", "Job avec 'Sur appel' ou 'On call' → technicien inclus dans l'export avec statut 'Sur appel', aucun camion assigné."],
-    ["Camions fixes", "Mohamed → 514-012-017 toujours. Alex → 514-014-25 toujours. Lerby → 514-010-015 toujours. Ces camions sont réservés exclusivement à leur tech — les autres ne peuvent pas les recevoir."],
-    ["Première job par heure", "Les jobs sont triées par heure de début (colonne Times). La première adresse affichée est la vraie première de la journée."],
-    ["Priorité 1 — Compatibilité type", "Camion CASA/Condo → techs CASA/Condo. Caravans/Hyundai/Mazda → techs Murale. Aucune exception."],
-    ["Priorité 2 — Van Duo pour Thierno", "Thierno travaille en Duo. Seuls 514-019-26 et 514-020-26 sont éligibles."],
-    ["Priorité 3 — Score de préférence", "Liste ordonnée par zone domicile ↔ dépôt. Le meilleur camion disponible non réservé est sélectionné."],
-    ["Règle absolue — 1 camion = 1 tech/jour", "Capacité 1 pour camions standard, 2 pour vans duo."],
-    ["Override VP", "Force un camion spécifique sur un tech pour une journée. Remplace le moteur."],
-    ["Validation VP", "Cocher avant de communiquer. Objectif : 48h minimum avant la journée."],
+    ["Source de vérité — Visits Report","Seuls les techs présents dans le CSV sont inclus. Aucune liste statique."],
+    ["Statut Off","Client name ou Visit title = 'Off' → exclu de la journée."],
+    ["Statut Sur appel","Job 'Sur appel' → inclus sans camion assigné."],
+    ["Camions fixes","Mohamed → 514-012-017. Alex → 514-014-25. Lerby → 514-010-015. Ces camions sont réservés exclusivement."],
+    ["Première job par heure","Tri sur la colonne Times. Première adresse = heure de début la plus tôt."],
+    ["Recommandation Type 1","Si la première job du lendemain est plus proche du domicile du tech que du dépôt, et que la dernière job du jour finit près du domicile → proposer de garder le camion à domicile."],
+    ["Recommandation Type 2","Si la première job de B demain est plus proche du domicile de A que de celui de B, et que A finit aujourd'hui près de chez lui → proposer d'échanger la job et de faire garder le camion à A."],
+    ["Recommandation Type 3","Si un autre camion libre a son dépôt plus proche de la première job du tech → proposer le changement."],
+    ["Priorité camion — Compatibilité type","Murale → Caravans/Hyundai/Mazda. CASA/Condo → camions 514-xxx."],
+    ["Priorité camion — Duo","Thierno → 514-019-26 ou 514-020-26 uniquement."],
+    ["1 camion = 1 tech/jour","Sauf vans duo (cap. 2)."],
   ];
-  document.getElementById("rules-list").innerHTML = rules.map(([t, d]) =>
+  document.getElementById("rules-list").innerHTML = rules.map(([t,d])=>
     `<div class="rule-item"><div class="rule-title">${t}</div><div class="rule-desc">${d}</div></div>`).join("");
 }
 
 function switchTab(t) {
-  ["planning","import","fleet","rules"].forEach((id, i) => {
-    document.getElementById("tab-"+id).classList.toggle("active", id === t);
-    document.querySelectorAll(".tab")[i].classList.toggle("active", id === t);
+  ["planning","recs","import","fleet","rules"].forEach((id,i)=>{
+    document.getElementById("tab-"+id).classList.toggle("active",id===t);
+    document.querySelectorAll(".tab")[i].classList.toggle("active",id===t);
   });
-  if (t === "fleet") renderFleet();
-  if (t === "rules") renderRules();
+  if(t==="fleet") renderFleet();
+  if(t==="rules") renderRules();
 }
 
-function setStatus(msg) { document.getElementById("status-msg").textContent = msg; }
-
 function loadDemo() {
-  document.getElementById("csv-input").value =
+  document.getElementById("csv-input").value=
 `Job #,Date,Times,Visit title,Client name,Client email,Client phone,Service property name,Service street,Service city,Service province,Service ZIP,Visit completed date,Assigned to,Line items
-276046207,"May 06, 2026",8:00AM - 10:00AM,Gabriel Labbé - murale,Gabriel Labbé,g@gmail.com,(514) 515-1288,,3653 Boulevard Saint-Laurent,Montréal,Québec,H2X 2V5,-,A - Mural - Edgard Marvens Jeanith,Nettoyage murale
-276047310,"May 06, 2026",10:00AM - 12:00PM,Noel Nathanael - murale,Noel Nathanael,n@gmail.com,(514) 443-2187,,8621 Rue De Teck,Montréal,Québec,H1L 1J5,-,B - Casa - Kinsley Boileau,Nettoyage murale
-276047311,"May 06, 2026",8:30AM - 10:30AM,Maria Weinrauch - murale,Maria Weinrauch,m@gmail.com,(514) 442-2287,,64 Rue Lucien-Thériault,Notre-Dame-de-l'Île-Perrot,Québec,J7W 1T6,-,B - Casa - Pape Alioune Sy,Nettoyage
-276047312,"May 06, 2026",9:00AM - 11:00AM,Fatou Diallo - centrale,Fatou Diallo,f@gmail.com,(514) 555-6666,,3900 Boul. des Sources,Dollard-des-Ormeaux,Québec,H9B 2J1,-,B - Casa - Mohamed Fofana,Nettoyage
-276047313,"May 06, 2026",11:00AM - 1:00PM,Sophie Bernard,Sophie Bernard,s@gmail.com,(514) 333-4444,,450 Rue Saint-Denis,Montréal,Québec,H2X 3L1,-,B - Casa - Mohamed Fofana,Nettoyage
-276047314,"May 06, 2026",8:00AM - 9:00AM,Off,Off,,,,,Montréal,Québec,,-,B - Casa - Rachid Ait Idir,
-276047315,"May 06, 2026",8:00AM - 9:00AM,Sur appel,Sur appel,,,,,Montréal,Québec,,-,B - Casa - Christopher Sulyvan,
-276047316,"May 06, 2026",9:00AM - 11:00AM,Antoine Ahizi - murale,Antoine Ahizi,a@gmail.com,(514) 295-4145,,8205 Rue Angèle,Laval,Québec,H7A 3B4,-,B - Casa - Alexandre Germain,Nettoyage`;
+1,"May 06, 2026",8:00AM - 10:00AM,Thomas Suter - murale,Thomas Suter,t@g.com,(514) 111-0001,,100 Rue Saint-Denis,Montréal,QC,H2X,-,B - Casa - Pape Alioune Sy,
+2,"May 06, 2026",10:30AM - 12:00PM,Louis Chouinard - murale,Louis Chouinard,l@g.com,(514) 111-0002,,200 Av. Victoria,Westmount,QC,H3Z,-,B - Casa - Pape Alioune Sy,
+3,"May 06, 2026",8:00AM - 10:00AM,Antoine Ahizi,Antoine Ahizi,a@g.com,(514) 111-0003,,8205 Rue Angèle,Laval,QC,H7A,-,B - Casa - Alexandre Germain,
+4,"May 06, 2026",10:30AM - 12:30PM,Michel Lesage,Michel Lesage,m@g.com,(514) 111-0004,,1 Rue Édouard-Lalonde,Laval,QC,J7V,-,B - Casa - Alexandre Germain,
+5,"May 06, 2026",8:00AM - 10:00AM,Dania Caggiano,Dania Caggiano,d@g.com,(514) 111-0005,,6087 Rue Louis-Veuillot,Montréal,QC,H1M,-,B - Casa - Kinsley Boileau,
+6,"May 06, 2026",10:30AM - 12:30PM,George Thorpe,George Thorpe,g@g.com,(514) 111-0006,,12320 Avenue Léopold-Houlé,Montréal,QC,H1E,-,B - Casa - Kinsley Boileau,
+7,"May 06, 2026",8:00AM - 9:00AM,Off,Off,,,,,Montréal,QC,,-,B - Casa - Rachid Ait Idir,
+8,"May 06, 2026",8:00AM - 9:00AM,Sur appel,Sur appel,,,,,Montréal,QC,,-,B - Casa - Christopher Sulyvan,
+9,"May 07, 2026",8:00AM - 10:00AM,Edouard Abel,Edouard Abel,e@g.com,(514) 111-0007,,1749 Avenue De La Gare,Repentigny,QC,J7K,-,B - Casa - Kinsley Boileau,
+10,"May 07, 2026",10:30AM - 12:30PM,Slim Jellabi,Slim Jellabi,s@g.com,(514) 111-0008,,200 Rue Beaubien E,Montréal,QC,H2S,-,B - Casa - Pape Alioune Sy,
+11,"May 07, 2026",8:00AM - 10:00AM,Fatou Diallo,Fatou Diallo,f@g.com,(514) 111-0009,,3900 Boul. des Sources,Laval,QC,H7T,-,B - Casa - Mohamed Fofana,
+12,"May 07, 2026",8:00AM - 9:00AM,Off,Off,,,,,Montréal,QC,,-,B - Casa - Alexandre Germain,`;
   parseCSV();
 }
 
-document.getElementById("app-date").textContent = new Date().toLocaleDateString("fr-CA", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
-renderFleet();
-renderRules();
+document.getElementById("app-date").textContent = new Date().toLocaleDateString("fr-CA",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+renderFleet(); renderRules();
 </script>
 </body>
 </html>
