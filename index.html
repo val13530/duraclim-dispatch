@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DuraClim — Assignation Camions</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0efe9;
+    --text: #1a1a18;
+    --text2: #5f5e5a;
+    --text3: #888780;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --blue-bg: #e6f1fb;
+    --blue-text: #185fa5;
+    --green-bg: #eaf3de;
+    --green-text: #3b6d11;
+    --amber-bg: #faeeda;
+    --amber-text: #854f0b;
+    --red-bg: #fcebeb;
+    --red-text: #a32d2d;
+    --purple-bg: #eeedfe;
+    --purple-text: #3c3489;
+    --gray-bg: #f1efe8;
+    --gray-text: #5f5e5a;
+    --laval: #d5e8d4;
+    --iberville: #fff2cc;
+    --stlaurent: #dae8fc;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; color: var(--text); background: var(--bg3); min-height: 100vh; }
+  .app { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+  .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .app-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  .app-subtitle { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .app-date { font-size: 12px; color: var(--text3); text-align: right; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 12px; }
+  .section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--text2); text-transform: uppercase; margin-bottom: 12px; }
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { font-size: 13px; padding: 6px 14px; border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer; background: var(--bg2); color: var(--text2); transition: all 0.15s; user-select: none; }
+  .tab:hover { background: var(--bg); }
+  .tab.active { background: var(--bg); color: var(--text); border-color: var(--border2); font-weight: 500; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .controls { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+  label.field-label { font-size: 11px; color: var(--text2); display: block; margin-bottom: 4px; font-weight: 500; }
+  input[type=date], select, input[type=text] { font-family: inherit; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 10px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+  input[type=date]:focus, select:focus, input[type=text]:focus { border-color: #378add; }
+  button { font-family: inherit; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 16px; background: var(--bg); color: var(--text); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  button:hover { background: var(--bg2); }
+  button.primary { background: #185fa5; color: #fff; border-color: #185fa5; }
+  button.primary:hover { background: #0c447c; }
+  button.sm { font-size: 12px; padding: 4px 10px; }
+  button.danger-sm { font-size: 12px; padding: 4px 10px; color: var(--red-text); border-color: rgba(162,45,45,0.3); }
+  button.danger-sm:hover { background: var(--red-bg); }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .metric { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; }
+  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .metric-value { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
+  .b-active { background: var(--green-bg); color: var(--green-text); }
+  .b-oncall { background: var(--amber-bg); color: var(--amber-text); }
+  .b-off { background: var(--gray-bg); color: var(--gray-text); }
+  .b-duo { background: var(--purple-bg); color: var(--purple-text); }
+  .b-assigned { background: var(--blue-bg); color: var(--blue-text); }
+  .b-conflict { background: var(--red-bg); color: var(--red-text); }
+  .b-override { background: var(--amber-bg); color: var(--amber-text); }
+  .tech-card { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; background: var(--bg); transition: border-color 0.15s; }
+  .tech-card:hover { border-color: var(--border2); }
+  .tech-card.conflict { border-left: 2px solid #e24b4a; }
+  .tech-card.validated { border-left: 2px solid #639922; }
+  .tech-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .tech-info { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--blue-text); flex-shrink: 0; }
+  .tech-name { font-weight: 500; font-size: 13px; }
+  .tech-zone { font-size: 11px; color: var(--text2); }
+  .tech-badges { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+  .assignment-line { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .camion-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--blue-bg); color: var(--blue-text); border: 0.5px solid rgba(24,95,165,0.2); }
+  .depot-text { font-size: 11px; color: var(--text3); }
+  .job-line { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .job-label { font-size: 11px; color: var(--text3); }
+  .job-addr { font-size: 12px; color: var(--text2); }
+  .override-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); flex-wrap: wrap; }
+  .override-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+  .validate-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .validate-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); cursor: pointer; }
+  .validate-check input { width: 14px; height: 14px; cursor: pointer; }
+  textarea { font-family: "Menlo", "Consolas", monospace; font-size: 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px; width: 100%; background: var(--bg2); color: var(--text); resize: vertical; outline: none; transition: border-color 0.15s; line-height: 1.6; }
+  textarea:focus { border-color: #378add; }
+  .info-box { background: var(--blue-bg); border: 0.5px solid rgba(24,95,165,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--blue-text); line-height: 1.6; margin-bottom: 12px; }
+  .status-text { font-size: 12px; color: var(--text3); }
+  .fleet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+  .fleet-card { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; background: var(--bg); }
+  .fleet-name { font-weight: 500; font-size: 13px; }
+  .fleet-depot { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+  .fleet-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--gray-bg); color: var(--gray-text); }
+  .tag-laval { background: var(--laval); color: #27500a; }
+  .tag-iberville { background: var(--iberville); color: #633806; }
+  .tag-stlaurent { background: var(--stlaurent); color: #0c447c; }
+  .tag-duo { background: var(--purple-bg); color: var(--purple-text); }
+  .rule-item { padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .rule-item:last-child { border-bottom: none; }
+  .rule-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+  .rule-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .separator { border: none; border-top: 0.5px solid var(--border); margin: 12px 0; }
+  .empty-state { text-align: center; padding: 32px; color: var(--text3); font-size: 13px; }
+  .conflict-warning { background: var(--red-bg); border: 0.5px solid rgba(162,45,45,0.25); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--red-text); margin-bottom: 12px; }
+  @media (max-width: 600px) {
+    .app { padding: 16px 12px; }
+    .controls { flex-direction: column; align-items: stretch; }
+    .metrics { grid-template-columns: repeat(3, 1fr); }
+  }
+  .footer { text-align: center; font-size: 11px; color: var(--text3); margin-top: 32px; padding-top: 16px; border-top: 0.5px solid var(--border); }
+  .validated-banner { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green-text); font-weight: 500; }
+  select.override-select { width: 220px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="app-header">
+    <div>
+      <div class="app-title">Assignation Camions — Montréal</div>
+      <div class="app-subtitle">Moteur de décision · DuraClim 2026</div>
+    </div>
+    <div class="app-date" id="app-date"></div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('planning')">Planning</div>
+    <div class="tab" onclick="switchTab('import')">Import Jobber</div>
+    <div class="tab" onclick="switchTab('fleet')">Flotte</div>
+    <div class="tab" onclick="switchTab('rules')">Règles</div>
+  </div>
+
+  <!-- TAB PLANNING -->
+  <div id="tab-planning" class="tab-content active">
+    <div class="card">
+      <div class="controls">
+        <div>
+          <label class="field-label">Date de planification</label>
+          <input type="date" id="plan-date" />
+        </div>
+        <button class="primary" onclick="runAssignment()">Calculer assignations</button>
+        <button onclick="exportCSV()">Exporter CSV</button>
+        <span class="status-text" id="status-msg"></span>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Techs actifs</div><div class="metric-value" id="m-active">—</div></div>
+      <div class="metric"><div class="metric-label">Assignés</div><div class="metric-value" id="m-assigned">—</div></div>
+      <div class="metric"><div class="metric-label">Conflits</div><div class="metric-value" id="m-conflicts" style="color:#e24b4a;">—</div></div>
+      <div class="metric"><div class="metric-label">Validés</div><div class="metric-value" id="m-validated" style="color:#3b6d11;">—</div></div>
+    </div>
+
+    <div id="conflict-banner"></div>
+    <div id="assignment-results"><div class="empty-state">Sélectionner une date et cliquer sur "Calculer assignations".</div></div>
+  </div>
+
+  <!-- TAB IMPORT -->
+  <div id="tab-import" class="tab-content">
+    <div class="card">
+      <div class="section-title">Export Jobber — Format CSV</div>
+      <div class="info-box">
+        Colonnes requises (dans n'importe quel ordre) : <strong>Technicien</strong>, <strong>Date</strong>, <strong>Statut</strong>, <strong>Première adresse</strong>.<br>
+        Copier-coller directement depuis Jobber ou un export Google Sheets.
+      </div>
+      <textarea id="csv-input" rows="10" placeholder="Technicien,Date,Statut,Première adresse&#10;Mohamed Fofana,2026-05-06,A voir,&quot;350 Rue des Perron, Laval&quot;&#10;Ali Messaoudi,2026-05-06,A voir,&quot;5400 Av. Victoria, Montréal&quot;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        <button class="primary" onclick="parseCSV()">Importer</button>
+        <button onclick="loadDemo()">Charger données démo</button>
+        <button class="danger-sm" onclick="clearImport()">Effacer</button>
+        <span class="status-text" id="import-status"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB FLEET -->
+  <div id="tab-fleet" class="tab-content">
+    <div class="card">
+      <div class="section-title">Flotte Montréal — 13 véhicules</div>
+      <div class="fleet-grid" id="fleet-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB RULES -->
+  <div id="tab-rules" class="tab-content">
+    <div class="card">
+      <div class="section-title">Règles du moteur d'assignation</div>
+      <div id="rules-list"></div>
+    </div>
+  </div>
+
+  <div class="footer">DuraClim — Usage interne uniquement · Confidentiel</div>
+</div>
+
+<script>
+const TECHS = [
+  { name:"Mohamed",    full:"Mohamed Fofana",           zone:"Laval",              pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
+  { name:"Ali",        full:"Ali Messaoudi",             zone:"Côte-des-Neiges",    pref:["514-016-26","514-021-25"],               type:"casa_condo", duo:false },
+  { name:"Christopher",full:"Christopher Sulyvan",       zone:"Plateau/Centre",     pref:["514-016-26","514-017-26"],               type:"casa_condo", duo:false },
+  { name:"Israel",     full:"Israel Mpoyi",              zone:"Plateau/Centre",     pref:["514-017-26","514-021-25"],               type:"casa_condo", duo:false },
+  { name:"Rachid",     full:"Rachid",                    zone:"Montréal",           pref:["514-016-26","514-017-26","514-021-25"],   type:"casa_condo", duo:false },
+  { name:"Pape",       full:"Pape Alioune Sy",           zone:"Côte-des-Neiges",    pref:["514-021-25","514-016-26"],               type:"casa_condo", duo:false },
+  { name:"Kinsley",    full:"Kinsley Boileau",           zone:"RDP/NE Montréal",    pref:["514-010-015","514-019-26"],              type:"casa_condo", duo:false },
+  { name:"Jennings",   full:"Jennings Mathurin",         zone:"Rive-Nord",          pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
+  { name:"Alex",       full:"Alexandre Germain",         zone:"Laval",              pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
+  { name:"Daniel",     full:"Daniel Mpeng",              zone:"Laval",              pref:["514-012-017","514-014-25"],              type:"casa_condo", duo:false },
+  { name:"Thierno",    full:"Thierno I.S. Bah",          zone:"Côte-des-Neiges",    pref:["514-019-26","514-020-26"],               type:"duo",        duo:true  },
+  { name:"Carson",     full:"Carson Alphonse",           zone:"RDP/NE Montréal",    pref:["514-010-015","514-019-26","514-020-26"], type:"casa_condo", duo:false },
+  { name:"Yanis",      full:"Yanis Ferdji",              zone:"Anjou/Est",          pref:["514-019-26","514-020-26","514-010-015"], type:"casa_condo", duo:false },
+  { name:"Edgard",     full:"Edgard Marvens",            zone:"Laval",              pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3"], type:"murale", duo:false },
+  { name:"Gabriele",   full:"Gabriele Biunno",           zone:"RDP/NE Montréal",    pref:["Grand Caravan 1","Grand Caravan 2","Grand Caravan 3","Hyundai (1)"], type:"murale", duo:false },
+];
+
+const FLEET = [
+  { id:"514-012-017",    depot:"30 Rue Lefort, Laval",                   secteur:"Laval",       type:"casa_condo", duo:false, cap:1 },
+  { id:"514-010-015",    depot:"5555 Rue d'Iberville, Montréal",         secteur:"Rosemont/NE", type:"casa_condo", duo:false, cap:1 },
+  { id:"514-014-25",     depot:"30 Rue Lefort, Laval",                   secteur:"Laval",       type:"casa_condo", duo:false, cap:1 },
+  { id:"514-016-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1 },
+  { id:"514-017-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1 },
+  { id:"514-019-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2 },
+  { id:"514-020-26",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:true,  cap:2 },
+  { id:"514-021-25",     depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"casa_condo", duo:false, cap:1 },
+  { id:"Grand Caravan 1",depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
+  { id:"Grand Caravan 2",depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
+  { id:"Grand Caravan 3",depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
+  { id:"Hyundai (1)",    depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
+  { id:"Mazda (1)",      depot:"7735 Boul. Saint-Laurent, Montréal",     secteur:"Mile-End",    type:"murale",     duo:false, cap:1 },
+];
+
+const SCHEDULE = {
+  "Mohamed":    ["A voir","On call","A voir","A voir","A voir","Off","Off"],
+  "Ali":        ["A voir","A voir","A voir","A voir","On call","Off","Off"],
+  "Christopher":["On call","A voir","A voir","A voir","A voir","Off","Off"],
+  "Israel":     ["A voir","A voir","A voir","On call","A voir","Off","Off"],
+  "Rachid":     ["A voir","A voir","On call","A voir","A voir","Off","Off"],
+  "Pape":       ["A voir","A voir","Off","Off","On call","A voir","A voir"],
+  "Kinsley":    ["Off","Off","Off","Off","Off","A voir","A voir"],
+  "Jennings":   ["A voir","A voir","A voir","A voir","On call","A voir","A voir"],
+  "Alex":       ["A voir","A voir","A voir","On call","A voir","Off","Off"],
+  "Daniel":     ["On call","A voir","A voir","A voir","A voir","Off","Off"],
+  "Thierno":    ["A voir","A voir","Duo","On call","Duo","Off","Off"],
+  "Carson":     ["A voir","On call","A voir","A voir","A voir","Off","Off"],
+  "Yanis":      ["On call","A voir","A voir","A voir","A voir","Off","Off"],
+};
+
+let importedJobs = {};
+let overrides = {};
+let validated = {};
+let lastAssignments = {};
+
+function getStatus(techName, dateStr) {
+  const d = new Date(dateStr + "T00:00:00");
+  const dow = d.getDay();
+  const idx = dow === 0 ? 6 : dow - 1;
+  return (SCHEDULE[techName] || [])[idx] || "Off";
+}
+
+function score(tech, camion) {
+  if (tech.type === "murale" && camion.type !== "murale") return -999;
+  if (tech.type !== "murale" && camion.type === "murale") return -999;
+  if (tech.duo && !camion.duo) return -999;
+  let s = 100;
+  const pi = tech.pref.indexOf(camion.id);
+  if (pi === 0) s += 50;
+  else if (pi === 1) s += 30;
+  else if (pi >= 2) s += 15;
+  if (camion.duo && !tech.duo) s -= 15;
+  return s;
+}
+
+function runAssignment() {
+  const dateVal = document.getElementById("plan-date").value;
+  if (!dateVal) { setStatus("Sélectionner une date."); return; }
+
+  const activeTechs = TECHS.filter(t => {
+    const st = getStatus(t.name, dateVal);
+    return st === "A voir" || st === "Duo";
+  });
+
+  const usage = {};
+  lastAssignments = {};
+  const conflicts = [];
+
+  for (const tech of activeTechs) {
+    const st = getStatus(tech.name, dateVal);
+    if (overrides[tech.name]) {
+      const cid = overrides[tech.name];
+      usage[cid] = (usage[cid] || 0) + 1;
+      lastAssignments[tech.name] = { camion: cid, status: st, override: true };
+      continue;
+    }
+    const eligible = FLEET.filter(c => {
+      const used = usage[c.id] || 0;
+      return used < c.cap;
+    });
+    const ranked = eligible
+      .map(c => ({ c, s: score(tech, c) }))
+      .filter(x => x.s > 0)
+      .sort((a, b) => b.s - a.s);
+    if (ranked.length === 0) {
+      lastAssignments[tech.name] = { camion: null, status: st, conflict: true };
+      conflicts.push(tech.full);
+    } else {
+      const best = ranked[0].c;
+      usage[best.id] = (usage[best.id] || 0) + 1;
+      lastAssignments[tech.name] = { camion: best.id, depot: best.depot, secteur: best.secteur, status: st };
+    }
+  }
+
+  const validatedCount = Object.keys(validated).filter(k => validated[k] && lastAssignments[k]).length;
+  document.getElementById("m-active").textContent = activeTechs.length;
+  document.getElementById("m-assigned").textContent = Object.values(lastAssignments).filter(a => a.camion && !a.conflict).length;
+  document.getElementById("m-conflicts").textContent = conflicts.length;
+  document.getElementById("m-validated").textContent = validatedCount;
+
+  const banner = document.getElementById("conflict-banner");
+  if (conflicts.length > 0) {
+    banner.innerHTML = `<div class="conflict-warning">Aucun camion disponible pour : <strong>${conflicts.join(", ")}</strong>. Assigner manuellement via le menu override.</div>`;
+  } else {
+    banner.innerHTML = "";
+  }
+
+  renderResults(dateVal, activeTechs);
+  setStatus("Assignations calculées.");
+}
+
+function renderResults(dateVal, activeTechs) {
+  const el = document.getElementById("assignment-results");
+  if (activeTechs.length === 0) {
+    el.innerHTML = '<div class="empty-state">Aucun technicien actif ce jour.</div>';
+    return;
+  }
+
+  const d = new Date(dateVal + "T00:00:00");
+  const days = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+  const months = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+
+  let html = `<div style="font-size:12px;color:var(--text2);font-weight:500;margin-bottom:12px;">${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}</div>`;
+
+  for (const tech of activeTechs) {
+    const asgn = lastAssignments[tech.name];
+    if (!asgn) continue;
+    const job = importedJobs[tech.name];
+    const isVal = validated[tech.name];
+    const avatarBg = tech.type === "murale" ? "var(--green-bg)" : (tech.duo ? "var(--purple-bg)" : "var(--blue-bg)");
+    const avatarColor = tech.type === "murale" ? "var(--green-text)" : (tech.duo ? "var(--purple-text)" : "var(--blue-text)");
+
+    html += `<div class="tech-card ${asgn.conflict ? 'conflict' : ''} ${isVal ? 'validated' : ''}">
+      <div class="tech-header">
+        <div class="tech-info">
+          <div class="avatar" style="background:${avatarBg};color:${avatarColor};">${tech.name.substring(0,2).toUpperCase()}</div>
+          <div>
+            <div class="tech-name">${tech.full}</div>
+            <div class="tech-zone">${tech.zone}</div>
+          </div>
+        </div>
+        <div class="tech-badges">
+          ${asgn.status === "Duo" ? '<span class="badge b-duo">DUO</span>' : ''}
+          ${asgn.override ? '<span class="badge b-override">Override</span>' : ''}
+          ${asgn.conflict ? '<span class="badge b-conflict">Conflit</span>' : ''}
+          ${isVal ? '<span class="badge b-active">✓ Validé</span>' : ''}
+        </div>
+      </div>
+
+      <div class="assignment-line">
+        ${asgn.conflict
+          ? '<span style="font-size:12px;color:var(--red-text);">Aucun camion éligible — assigner via override</span>'
+          : `<span class="camion-pill">${asgn.camion}</span><span class="depot-text">${asgn.depot || ''}</span>`
+        }
+      </div>
+
+      ${job ? `<div class="job-line"><span class="job-label">1ère job :</span><span class="job-addr">${job.address}</span></div>` : ''}
+
+      <div class="override-row">
+        <span class="override-label">Override :</span>
+        <select class="override-select" onchange="applyOverride('${tech.name}', this.value)">
+          <option value="">— Décision moteur —</option>
+          ${FLEET.filter(c => c.type === tech.type || (tech.duo && c.duo) || tech.type === 'casa_condo').map(c =>
+            `<option value="${c.id}" ${overrides[tech.name] === c.id ? 'selected' : ''}>${c.id} (${c.secteur})</option>`
+          ).join('')}
+        </select>
+        ${overrides[tech.name] ? `<button class="danger-sm" onclick="clearOverride('${tech.name}')">Retirer</button>` : ''}
+      </div>
+
+      <div class="validate-row">
+        <label class="validate-check">
+          <input type="checkbox" ${isVal ? 'checked' : ''} onchange="toggleValidate('${tech.name}', this.checked)" />
+          Validé VP — camion communiqué au technicien
+        </label>
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function applyOverride(techName, camionId) {
+  if (!camionId) { delete overrides[techName]; }
+  else { overrides[techName] = camionId; }
+  const dateVal = document.getElementById("plan-date").value;
+  if (dateVal) runAssignment();
+}
+
+function clearOverride(techName) {
+  delete overrides[techName];
+  const dateVal = document.getElementById("plan-date").value;
+  if (dateVal) runAssignment();
+}
+
+function toggleValidate(techName, checked) {
+  validated[techName] = checked;
+  const vals = Object.keys(validated).filter(k => validated[k] && lastAssignments[k]).length;
+  document.getElementById("m-validated").textContent = vals;
+  const asgn = lastAssignments[techName];
+  if (asgn) {
+    const cards = document.querySelectorAll(".tech-card");
+    runAssignment();
+  }
+}
+
+function parseCSV() {
+  const raw = document.getElementById("csv-input").value.trim();
+  if (!raw) return;
+  const lines = raw.split("\n").map(l => l.trim()).filter(l => l);
+  const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/"/g, ""));
+  const fi = (keywords) => headers.findIndex(h => keywords.some(k => h.includes(k)));
+  const techIdx  = fi(["technicien","tech","nom"]);
+  const addrIdx  = fi(["adresse","address","première","premiere","first"]);
+  const dateIdx  = fi(["date"]);
+  const statIdx  = fi(["statut","status"]);
+
+  if (techIdx === -1 || addrIdx === -1) {
+    document.getElementById("import-status").textContent = "Colonnes non trouvées. Vérifier : Technicien, Première adresse.";
+    return;
+  }
+
+  importedJobs = {};
+  for (let i = 1; i < lines.length; i++) {
+    const cols = splitCSVLine(lines[i]);
+    if (!cols[techIdx]) continue;
+    const rawName = cols[techIdx].trim();
+    const firstName = rawName.split(" ")[0];
+    const matchedTech = TECHS.find(t =>
+      t.full.toLowerCase().startsWith(firstName.toLowerCase()) ||
+      t.name.toLowerCase() === firstName.toLowerCase()
+    );
+    const key = matchedTech ? matchedTech.name : firstName;
+    importedJobs[key] = {
+      address: addrIdx >= 0 ? cols[addrIdx] || "" : "",
+      date: dateIdx >= 0 ? cols[dateIdx] || "" : "",
+      status: statIdx >= 0 ? cols[statIdx] || "" : "",
+    };
+    if (dateIdx >= 0 && cols[dateIdx] && !document.getElementById("plan-date").value) {
+      document.getElementById("plan-date").value = cols[dateIdx];
+    }
+  }
+  const n = Object.keys(importedJobs).length;
+  document.getElementById("import-status").textContent = `${n} technicien${n>1?'s':''} importé${n>1?'s':''}.`;
+  switchTab("planning");
+}
+
+function splitCSVLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ""; }
+    else { current += ch; }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function clearImport() {
+  importedJobs = {};
+  document.getElementById("csv-input").value = "";
+  document.getElementById("import-status").textContent = "Données effacées.";
+}
+
+function loadDemo() {
+  document.getElementById("csv-input").value =
+`Technicien,Date,Statut,Première adresse
+Mohamed Fofana,2026-05-06,A voir,"350 Rue des Perron, Laval"
+Ali Messaoudi,2026-05-06,A voir,"5400 Av. Victoria, Montréal"
+Christopher Sulyvan,2026-05-06,A voir,"3600 Rue Rachel E, Montréal"
+Israel Mpoyi,2026-05-06,A voir,"4200 Rue Ontario E, Montréal"
+Alexandre Germain,2026-05-06,A voir,"900 Boul. Cartier O, Laval"
+Daniel Mpeng,2026-05-06,A voir,"1800 Bd des Laurentides, Laval"
+Thierno Bah,2026-05-06,Duo,"4800 Av. Victoria, Montréal"
+Yanis Ferdji,2026-05-06,A voir,"7000 Bd des Galeries d'Anjou, Montréal"
+Carson Alphonse,2026-05-06,A voir,"12000 Rue Grenet, Montréal"`;
+  parseCSV();
+}
+
+function exportCSV() {
+  const dateVal = document.getElementById("plan-date").value;
+  if (!dateVal || Object.keys(lastAssignments).length === 0) { setStatus("Calculer d'abord les assignations."); return; }
+  let csv = "Technicien,Statut,Camion assigné,Dépôt,Override,Validé VP,Date\n";
+  for (const [name, asgn] of Object.entries(lastAssignments)) {
+    const tech = TECHS.find(t => t.name === name);
+    csv += `"${tech?.full || name}","${asgn.status}","${asgn.camion || 'CONFLIT'}","${asgn.depot || ''}","${asgn.override ? 'Oui' : 'Non'}","${validated[name] ? 'Oui' : 'Non'}","${dateVal}"\n`;
+  }
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `assignation_camions_${dateVal}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  setStatus("CSV exporté.");
+}
+
+function renderFleet() {
+  const tagClass = { "Laval": "tag-laval", "Rosemont/NE": "tag-iberville", "Mile-End": "tag-stlaurent" };
+  document.getElementById("fleet-grid").innerHTML = FLEET.map(c => `
+    <div class="fleet-card">
+      <div class="fleet-name">${c.id}</div>
+      <div class="fleet-depot">${c.depot}</div>
+      <div class="fleet-tags">
+        <span class="tag ${tagClass[c.secteur] || ''}">${c.secteur}</span>
+        ${c.duo ? '<span class="tag tag-duo">DUO · 2 techs</span>' : '<span class="tag">1 tech</span>'}
+        <span class="tag">${c.type}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderRules() {
+  const rules = [
+    ["Priorité 1 — Compatibilité type", "Camion CASA/Condo → techs CASA/Condo uniquement. Caravans/Hyundai/Mazda → techs Murale uniquement. Aucune exception."],
+    ["Priorité 2 — Van Duo pour Thierno", "Thierno travaille en Duo. Seuls 514-019-26 et 514-020-26 sont éligibles pour lui. Score −999 pour tout autre camion."],
+    ["Priorité 3 — Préférence par zone", "Chaque tech a une liste ordonnée de camions préférés basée sur la proximité domicile ↔ dépôt. Le premier de la liste disponible est sélectionné."],
+    ["Règle absolue — 1 camion = 1 tech/jour", "Un camion ordinaire (cap. 1) ne peut être assigné qu'à un seul technicien par jour. Les vans duo (cap. 2) acceptent 2 techs maximum."],
+    ["Rive-Nord / Rive-Sud", "Un camion ne couvre jamais les deux rives la même journée. Les techs Laval/Rive-Nord reçoivent les camions du dépôt Lefort en priorité."],
+    ["Override VP", "Le VP peut forcer n'importe quel camion sur n'importe quel tech. L'override remplace entièrement la décision du moteur."],
+    ["Validation VP", "Chaque assignation doit être cochée 'Validé VP' avant communication au technicien. Objectif : 48h minimum avant la journée de travail."],
+    ["On call / Off", "Ces statuts excluent le technicien de toute assignation automatique. Un tech On call peut être activé manuellement via override si besoin urgent."],
+  ];
+  document.getElementById("rules-list").innerHTML = rules.map(([t, d]) =>
+    `<div class="rule-item"><div class="rule-title">${t}</div><div class="rule-desc">${d}</div></div>`
+  ).join('');
+}
+
+function switchTab(t) {
+  ["planning","import","fleet","rules"].forEach((id, i) => {
+    document.getElementById("tab-" + id).classList.toggle("active", id === t);
+    document.querySelectorAll(".tab")[i].classList.toggle("active", id === t);
+  });
+  if (t === "fleet") renderFleet();
+  if (t === "rules") renderRules();
+}
+
+function setStatus(msg) {
+  document.getElementById("status-msg").textContent = msg;
+}
+
+const now = new Date();
+document.getElementById("app-date").textContent = now.toLocaleDateString("fr-CA", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+document.getElementById("plan-date").valueAsDate = now;
+renderFleet();
+renderRules();
+</script>
+</body>
+</html>
